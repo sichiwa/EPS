@@ -1,19 +1,17 @@
 ﻿using System;
+using System.Data.Entity;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using System.Web.Mvc;
 using EPS.Models;
-using EPS.DAL;
 
-namespace EPS.Controllers
+namespace EPS.DAL
 {
-    public class HomeController : Controller
+    public class EPSInitializer: DropCreateDatabaseIfModelChanges<EPSContext>
     {
-        private EPSContext context = new EPSContext();
-        public ActionResult Index()
+        protected override void Seed(EPSContext context)
         {
-
+            base.Seed(context);
             //context.ROLES.Add(new EPSROLE()
             //{
             //    RId = 1,
@@ -894,22 +892,6 @@ namespace EPS.Controllers
             //});
 
             //context.SaveChanges();
-
-            return View();
-        }
-
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-
-            return View();
         }
     }
 }

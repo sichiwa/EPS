@@ -5,6 +5,8 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using System.Data.Entity;
+using EPS.DAL;
 
 namespace EPS
 {
@@ -16,6 +18,7 @@ namespace EPS
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+            //Database.SetInitializer<EPSContext>(new EPSInitializer());
         }
     }
 }
