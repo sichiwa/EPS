@@ -16,10 +16,10 @@ namespace EPS.Models
 
             using (EPSContext context =new EPSContext())
             {
-                var LoginUserID = "TAS170";//HttpContext.Current.Session["UserID"].ToString();
-                var User = context.EPSUSERS.Where(u => u.UId == LoginUserID).First();
+                var LoginUserID = HttpContext.Current.Session["UserID"].ToString();
+                int UserRole = Convert.ToInt32(HttpContext.Current.Session["UserRole"].ToString());
                 var query = from rm in context.ROLEFUNCMAPPINGS
-                            where rm.RId ==User.RId
+                            where rm.RId == UserRole
                             join f in context.FUNCS on rm.FId equals f.FId into memu
                             from x in memu.DefaultIfEmpty()
                             select new

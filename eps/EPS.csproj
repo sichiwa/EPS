@@ -114,6 +114,10 @@
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
+    <Reference Include="TWCAlib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\TWCAlib.dll</HintPath>
+    </Reference>
     <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
       <HintPath>..\packages\WebActivatorEx.2.0.1\lib\net40\WebActivatorEx.dll</HintPath>
       <Private>True</Private>
@@ -200,6 +204,7 @@
     <Compile Include="Models\CHECKTITLE.cs" />
     <Compile Include="Models\FUNC.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\LOGININFO.cs" />
     <Compile Include="Models\MAILSERVER.cs" />
     <Compile Include="Models\MAILTEMPLATE.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -211,7 +216,10 @@
     <Compile Include="Models\SYSTEMLOG.cs" />
     <Compile Include="Models\EPSUSER.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Startup.cs" />
+    <Compile Include="SystemClass\CheckSessionFilterAttribute.cs" />
+    <Compile Include="SystemClass\CustomAuthorize.cs" />
+    <Compile Include="SystemClass\ShareFunc.cs" />
+    <Compile Include="SystemClass\SystemConfig.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />

@@ -14,7 +14,7 @@ namespace EPS.Controllers
         public ActionResult Index()
         {
 
-            //context.ROLES.Add(new EPSROLE()
+            //context.EPSROLES.Add(new EPSROLE()
             //{
             //    RId = 1,
             //    RoleName = "Admin",
@@ -43,7 +43,7 @@ namespace EPS.Controllers
             //    FuncName = "檢核項目管理",
             //    Controller = "CheckItem",
             //    Action = "Index",
-            //    PId=1,
+            //    PId = 1,
             //    ShowOrder = 41,
             //    IsEnable = true,
             //    CreateAccount = "TAS170",
@@ -58,7 +58,7 @@ namespace EPS.Controllers
             //    FuncName = "使用者管理",
             //    Controller = "Account",
             //    Action = "Index",
-            //    PId=1,
+            //    PId = 1,
             //    ShowOrder = 42,
             //    IsEnable = true,
             //    CreateAccount = "TAS170",
@@ -73,7 +73,7 @@ namespace EPS.Controllers
             //    FuncName = "權限管理",
             //    Controller = "Role",
             //    Action = "Index",
-            //    PId=1,
+            //    PId = 1,
             //    ShowOrder = 43,
             //    IsEnable = true,
             //    CreateAccount = "TAS170",
@@ -88,7 +88,7 @@ namespace EPS.Controllers
             //    FuncName = "功能管理",
             //    Controller = "Func",
             //    Action = "Index",
-            //    PId=1,
+            //    PId = 1,
             //    ShowOrder = 44,
             //    IsEnable = true,
             //    CreateAccount = "TAS170",
@@ -171,7 +171,7 @@ namespace EPS.Controllers
             //    UpdateTime = DateTime.Now
             //});
 
-            //context.USERS.Add(new EPSUSER()
+            //context.EPSUSERS.Add(new EPSUSER()
             //{
             //    UId = "TAS015",
             //    UserName = "郭清章",
@@ -183,7 +183,7 @@ namespace EPS.Controllers
             //    UpdateTime = DateTime.Now
             //});
 
-            //context.USERS.Add(new EPSUSER()
+            //context.EPSUSERS.Add(new EPSUSER()
             //{
             //    UId = "TAS170",
             //    UserName = "黃富彥",
@@ -195,7 +195,7 @@ namespace EPS.Controllers
             //    UpdateTime = DateTime.Now
             //});
 
-            //context.USERS.Add(new EPSUSER()
+            //context.EPSUSERS.Add(new EPSUSER()
             //{
             //    UId = "TAS105",
             //    UserName = "陳漢榮",
@@ -207,7 +207,7 @@ namespace EPS.Controllers
             //    UpdateTime = DateTime.Now
             //});
 
-            //context.USERS.Add(new EPSUSER()
+            //context.EPSUSERS.Add(new EPSUSER()
             //{
             //    UId = "TAS023",
             //    UserName = "吳志明",
@@ -219,7 +219,7 @@ namespace EPS.Controllers
             //    UpdateTime = DateTime.Now
             //});
 
-            //context.USERS.Add(new EPSUSER()
+            //context.EPSUSERS.Add(new EPSUSER()
             //{
             //    UId = "TAS046",
             //    UserName = "葉峯谷",
@@ -231,7 +231,7 @@ namespace EPS.Controllers
             //    UpdateTime = DateTime.Now
             //});
 
-            //context.USERS.Add(new EPSUSER()
+            //context.EPSUSERS.Add(new EPSUSER()
             //{
             //    UId = "TAS070",
             //    UserName = "張立寰",
@@ -243,7 +243,7 @@ namespace EPS.Controllers
             //    UpdateTime = DateTime.Now
             //});
 
-            //context.USERS.Add(new EPSUSER()
+            //context.EPSUSERS.Add(new EPSUSER()
             //{
             //    UId = "TAS103",
             //    UserName = "林依諴",
@@ -255,7 +255,7 @@ namespace EPS.Controllers
             //    UpdateTime = DateTime.Now
             //});
 
-            //context.USERS.Add(new EPSUSER()
+            //context.EPSUSERS.Add(new EPSUSER()
             //{
             //    UId = "TAS143",
             //    UserName = "詹景安",
@@ -267,7 +267,7 @@ namespace EPS.Controllers
             //    UpdateTime = DateTime.Now
             //});
 
-            //context.USERS.Add(new EPSUSER()
+            //context.EPSUSERS.Add(new EPSUSER()
             //{
             //    UId = "TAS154",
             //    UserName = "蔡辰陽",
@@ -279,7 +279,7 @@ namespace EPS.Controllers
             //    UpdateTime = DateTime.Now
             //});
 
-            //context.USERS.Add(new EPSUSER()
+            //context.EPSUSERS.Add(new EPSUSER()
             //{
             //    UId = "TAS158",
             //    UserName = "張國樺",
@@ -291,7 +291,7 @@ namespace EPS.Controllers
             //    UpdateTime = DateTime.Now
             //});
 
-            //context.USERS.Add(new EPSUSER()
+            //context.EPSUSERS.Add(new EPSUSER()
             //{
             //    UId = "TAS182",
             //    UserName = "姚茗翔",
@@ -303,7 +303,7 @@ namespace EPS.Controllers
             //    UpdateTime = DateTime.Now
             //});
 
-            //context.USERS.Add(new EPSUSER()
+            //context.EPSUSERS.Add(new EPSUSER()
             //{
             //    UId = "TAS191",
             //    UserName = "黃士瑋",
@@ -315,7 +315,7 @@ namespace EPS.Controllers
             //    UpdateTime = DateTime.Now
             //});
 
-            //context.USERS.Add(new EPSUSER()
+            //context.EPSUSERS.Add(new EPSUSER()
             //{
             //    UId = "TAS196",
             //    UserName = "王芊儒",
@@ -327,7 +327,7 @@ namespace EPS.Controllers
             //    UpdateTime = DateTime.Now
             //});
 
-            //context.USERS.Add(new EPSUSER()
+            //context.EPSUSERS.Add(new EPSUSER()
             //{
             //    UId = "TAS197",
             //    UserName = "吳盈杰",
@@ -339,7 +339,7 @@ namespace EPS.Controllers
             //    UpdateTime = DateTime.Now
             //});
 
-            //context.USERS.Add(new EPSUSER()
+            //context.EPSUSERS.Add(new EPSUSER()
             //{
             //    UId = "TAS199",
             //    UserName = "林永祿",

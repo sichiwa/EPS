@@ -7,7 +7,7 @@ using System.Web;
 
 namespace EPS.Models
 {
-    [Table("USER", Schema = "EPSMGR")]
+    [Table("EPSUSER", Schema = "EPSMGR")]
     public class EPSUSER
     {
         [Key]
