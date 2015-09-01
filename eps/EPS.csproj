@@ -188,8 +188,10 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\FunController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\RoleController.cs" />
     <Compile Include="DAL\EPSContext.cs" />
     <Compile Include="DAL\EPSInitializer.cs" />
     <Compile Include="Global.asax.cs">
@@ -220,6 +222,12 @@
     <Compile Include="SystemClass\CustomAuthorize.cs" />
     <Compile Include="SystemClass\ShareFunc.cs" />
     <Compile Include="SystemClass\SystemConfig.cs" />
+    <Compile Include="ViewModels\EPSROLE\vEPSROLE.cs" />
+    <Compile Include="ViewModels\EPSROLE\vEPSROLE_Manage.cs" />
+    <Compile Include="ViewModels\EPSUSER\vEPSUSER.cs" />
+    <Compile Include="ViewModels\EPSUSER\vEPSUSER_Manage.cs" />
+    <Compile Include="ViewModels\FUNC\vFUNC.cs" />
+    <Compile Include="ViewModels\FUNC\vFUNC_Manage.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
@@ -297,6 +305,15 @@
     <Content Include="Views\Shared\DisplayTemplates\MenuHelperModel.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\CanonicalHelperModel.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\BootstrapMenuHelperModel.cshtml" />
+    <Content Include="Views\Account\Index.cshtml" />
+    <Content Include="Views\Account\Create.cshtml" />
+    <Content Include="Views\Account\Edit.cshtml" />
+    <Content Include="Views\Role\Index.cshtml" />
+    <Content Include="Views\Role\Create.cshtml" />
+    <Content Include="Views\Role\Edit.cshtml" />
+    <Content Include="Views\Fun\Index.cshtml" />
+    <Content Include="Views\Fun\Create.cshtml" />
+    <Content Include="Views\Fun\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

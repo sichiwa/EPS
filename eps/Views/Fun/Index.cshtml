@@ -1,0 +1,109 @@
+﻿@model IEnumerable<EPS.Models.FUNC>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>功能清單</h2>
+
+<p>
+    @Html.ActionLink("新增功能", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.FId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FuncName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Controller)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Action)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Url)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ShowOrder)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IsEnable)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CreateAccount)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CreateTime)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UpadteAccount)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UpdateTime)
+        </th>
+        @*<th>
+            @Html.DisplayNameFor(model => model.ReviewAccount)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ReviewTime)
+        </th>*@
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.FId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FuncName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Controller)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Action)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Url)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ShowOrder)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IsEnable)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CreateAccount)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CreateTime)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UpadteAccount)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UpdateTime)
+        </td>
+        @*<td>
+            @Html.DisplayFor(modelItem => item.ReviewAccount)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ReviewTime)
+        </td>*@
+        <td>
+            @Html.ActionLink("編輯", "Edit", new { SN=item.SN })
+        </td>
+    </tr>
+}
+
+</table>

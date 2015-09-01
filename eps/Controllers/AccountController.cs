@@ -1,56 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
+using System.Linq;
 using EPS.Models;
+using EPS.ViewModels.EPSUSER;
+using EPS.DAL;
 using TWCAlib;
 using EPS.SystemClass;
+using System.Data.Entity;
 
 namespace EPS.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class AccountController : Controller
     {
+        EPSContext context = new EPSContext();
         SystemConfig Configer = new SystemConfig();
         ShareFunc SF = new ShareFunc();
         String log_Info = "Info";
         String log_Err = "Err";
-
-        //private ApplicationSignInManager _signInManager;
-        //private ApplicationUserManager _userManager;
-
-        //public AccountController()
-        //{
-        //}
-
-        //public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
-        //{
-        //    UserManager = userManager;
-        //    SignInManager = signInManager;
-        //}
-
-        //public ApplicationSignInManager SignInManager
-        //{
-        //    get
-        //    {
-        //        return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
-        //    }
-        //    private set 
-        //    { 
-        //        _signInManager = value; 
-        //    }
-        //}
-
-        //public ApplicationUserManager UserManager
-        //{
-        //    get
-        //    {
-        //        return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-        //    }
-        //    private set
-        //    {
-        //        _userManager = value;
-        //    }
-        //}
 
         //
         // GET: /Account/Login
@@ -64,7 +32,6 @@ namespace EPS.Controllers
         // POST: /Account/Login
         [HttpPost]
         [AllowAnonymous]
-        //[ValidateAntiForgeryToken]
         public ActionResult Login(LoginInfo model)
         {
             //初始化系統參數
@@ -101,9 +68,8 @@ namespace EPS.Controllers
                     SL.EndDateTime = DateTime.Now;
                     SL.SuccessCount = 0;
                     SL.FailCount = 1;
-                    SL.Msg = "登入失敗，錯誤訊息:[缺少系統參數LDAPName或VAVerifyURL]";
+                    SL.Msg = "登入作業失敗，錯誤訊息:[缺少系統參數LDAPName]";
                     SL.Result = false;
-                    //OPLoger.SetOPLog(op_name, op_action, StartDateTime, EndDateTime, TotalCount, SuccessCount, FailCount, Msg, Result);
                     SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
                     ContinueLogin = false;
                 }
@@ -141,7 +107,8 @@ namespace EPS.Controllers
                         Session["UserID"] = model.UserID;
                         //Session["UserID"] = "TAS191";
                         Session["UserRole"] = SF.getUserRole(model.UserID);
-                        return RedirectToAction("Index", "Home");
+
+                        return RedirectToAction("Index", "Account");
                     }
                     else
                     {
@@ -161,6 +128,7 @@ namespace EPS.Controllers
                         SL.Result = false;
                         SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
                         TempData["LoginMsg"] = SL.Msg;
+
                         return RedirectToAction("Login", "Account");
                     }
                 }
@@ -176,395 +144,315 @@ namespace EPS.Controllers
             }
         }
 
-        ////
-        //// GET: /Account/VerifyCode
-        //[AllowAnonymous]
-        //public async Task<ActionResult> VerifyCode(string provider, string returnUrl, bool rememberMe)
-        //{
-        //    // 需要使用者已透過使用者名稱/密碼或外部登入進行登入
-        //    if (!await SignInManager.HasBeenVerifiedAsync())
-        //    {
-        //        return View("Error");
-        //    }
-        //    return View(new VerifyCodeViewModel { Provider = provider, ReturnUrl = returnUrl, RememberMe = rememberMe });
-        //}
+        public ActionResult Index()
+        {
+            //初始化系統參數
+            Configer.Init();
 
-        ////
-        //// POST: /Account/VerifyCode
-        //[HttpPost]
-        //[AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        //public async Task<ActionResult> VerifyCode(VerifyCodeViewModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View(model);
-        //    }
+            //Log記錄用
+            SYSTEMLOG SL = new SYSTEMLOG();
+            SL.UId = Session["UserID"].ToString();
+            SL.Controller = "Account";
+            SL.Action = "Index";
+            SL.StartDateTime = DateTime.Now;
 
-        //    // 下列程式碼保護兩個因素碼不受暴力密碼破解攻擊。 
-        //    // 如果使用者輸入不正確的代碼來表示一段指定的時間，則使用者帳戶 
-        //    // 會有一段指定的時間遭到鎖定。 
-        //    // 您可以在 IdentityConfig 中設定帳戶鎖定設定
-        //    var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent:  model.RememberMe, rememberBrowser: model.RememberBrowser);
-        //    switch (result)
-        //    {
-        //        case SignInStatus.Success:
-        //            return RedirectToLocal(model.ReturnUrl);
-        //        case SignInStatus.LockedOut:
-        //            return View("Lockout");
-        //        case SignInStatus.Failure:
-        //        default:
-        //            ModelState.AddModelError("", "代碼無效。");
-        //            return View(model);
-        //    }
-        //}
+            string MailServer = Configer.MailServer;
+            int MailServerPort = Configer.MailServerPort;
+            string MailSender = Configer.MailSender;
+            List<string> MailReceiver = Configer.MailReceiver;
 
-        ////
-        //// GET: /Account/Register
-        //[AllowAnonymous]
-        //public ActionResult Register()
-        //{
-        //    return View();
-        //}
+            try
+            {
+                var query = from u in context.EPSUSERS
+                            join r in context.EPSROLES on u.RId equals r.RId into USERS
+                            from x in USERS.DefaultIfEmpty()
+                            select new vEPSUSER
+                            {
+                                UId=u.UId,
+                                UserName = u.UserName,
+                                UserEmail = u.UserEmail,
+                                RoleName = x.RoleName,
+                                CreateAccount = u.CreateAccount,
+                                CreateTime = u.CreateTime,
+                                UpadteAccount = u.UpadteAccount,
+                                UpdateTime = u.UpdateTime
+                            };
 
-        ////
-        //// POST: /Account/Register
-        //[HttpPost]
-        //[AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        //public async Task<ActionResult> Register(RegisterViewModel model)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-        //        var result = await UserManager.CreateAsync(user, model.Password);
-        //        if (result.Succeeded)
-        //        {
-        //            await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
-        //            // 如需如何啟用帳戶確認和密碼重設的詳細資訊，請造訪 http://go.microsoft.com/fwlink/?LinkID=320771
-        //            // 傳送包含此連結的電子郵件
-        //            // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-        //            // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-        //            // await UserManager.SendEmailAsync(user.Id, "確認您的帳戶", "請按一下此連結確認您的帳戶 <a href=\"" + callbackUrl + "\">這裏</a>");
+                SL.EndDateTime = DateTime.Now;
+                SL.TotalCount = query.Count();
+                SL.SuccessCount = query.Count();
+                SL.FailCount = 0;
+                SL.Result = true;
+                SL.Msg = "取得使用者清單作業成功";
+                SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
 
-        //            return RedirectToAction("Index", "Home");
-        //        }
-        //        AddErrors(result);
-        //    }
+                return View(query.ToList());
+            }
+            catch (Exception ex)
+            {
+                SL.EndDateTime = DateTime.Now;
+                SL.TotalCount = 0;
+                SL.SuccessCount = 0;
+                SL.FailCount = 0;
+                SL.Result = false;
+                SL.Msg = "取得使用者清單作業失敗，" + "錯誤訊息[" + ex.ToString() + "]";
+                SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
 
-        //    // 如果執行到這裡，發生某項失敗，則重新顯示表單
-        //    return View(model);
-        //}
+                return RedirectToAction("Login", "Account");
+            }
+        }
 
-        ////
-        //// GET: /Account/ConfirmEmail
-        //[AllowAnonymous]
-        //public async Task<ActionResult> ConfirmEmail(string userId, string code)
-        //{
-        //    if (userId == null || code == null)
-        //    {
-        //        return View("Error");
-        //    }
-        //    var result = await UserManager.ConfirmEmailAsync(userId, code);
-        //    return View(result.Succeeded ? "ConfirmEmail" : "Error");
-        //}
+        public ActionResult Create()
+        {
+            //初始化系統參數
+            Configer.Init();
 
-        ////
-        //// GET: /Account/ForgotPassword
-        //[AllowAnonymous]
-        //public ActionResult ForgotPassword()
-        //{
-        //    return View();
-        //}
+            //Log記錄用
+            SYSTEMLOG SL = new SYSTEMLOG();
+            SL.UId = Session["UserID"].ToString();
+            SL.Controller = "Account";
+            SL.Action = "Create";
+            SL.StartDateTime = DateTime.Now;
 
-        ////
-        //// POST: /Account/ForgotPassword
-        //[HttpPost]
-        //[AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        //public async Task<ActionResult> ForgotPassword(ForgotPasswordViewModel model)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        var user = await UserManager.FindByNameAsync(model.Email);
-        //        if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
-        //        {
-        //            // 不顯示使用者不存在或未受確認
-        //            return View("ForgotPasswordConfirmation");
-        //        }
+            string MailServer = Configer.MailServer;
+            int MailServerPort = Configer.MailServerPort;
+            string MailSender = Configer.MailSender;
+            List<string> MailReceiver = Configer.MailReceiver;
 
-        //        // 如需如何啟用帳戶確認和密碼重設的詳細資訊，請造訪 http://go.microsoft.com/fwlink/?LinkID=320771
-        //        // 傳送包含此連結的電子郵件
-        //        // string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
-        //        // var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);		
-        //        // await UserManager.SendEmailAsync(user.Id, "重設密碼", "請按 <a href=\"" + callbackUrl + "\">這裏</a> 重設密碼");
-        //        // return RedirectToAction("ForgotPasswordConfirmation", "Account");
-        //    }
+            try
+            {
+                vEPSUSER_Manage VUM = new vEPSUSER_Manage();
 
-        //    // 如果執行到這裡，發生某項失敗，則重新顯示表單
-        //    return View(model);
-        //}
+                var query = from r in context.EPSROLES
+                            select new
+                            {
+                                r.RId,
+                                r.RoleName
+                            };
+                VUM.RId = 1;
+                VUM.Role = new SelectList(query, "RId", "RoleName");
+                SL.EndDateTime = DateTime.Now;
+                SL.TotalCount = 0;
+                SL.SuccessCount = 0;
+                SL.FailCount = 0;
+                SL.Result = true;
+                SL.Msg = "建立使用者表單作業成功";
+                SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
 
-        ////
-        //// GET: /Account/ForgotPasswordConfirmation
-        //[AllowAnonymous]
-        //public ActionResult ForgotPasswordConfirmation()
-        //{
-        //    return View();
-        //}
+                return View(VUM);
+            }
+            catch (Exception ex)
+            {
+                SL.EndDateTime = DateTime.Now;
+                SL.TotalCount = 0;
+                SL.SuccessCount = 0;
+                SL.FailCount = 0;
+                SL.Result = false;
+                SL.Msg = "建立使用者表單作業失敗，" + "錯誤訊息[" + ex.ToString() + "]";
+                SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
 
-        ////
-        //// GET: /Account/ResetPassword
-        //[AllowAnonymous]
-        //public ActionResult ResetPassword(string code)
-        //{
-        //    return code == null ? View("Error") : View();
-        //}
+                return RedirectToAction("Index", "Account");
+            }
+        }
 
-        ////
-        //// POST: /Account/ResetPassword
-        //[HttpPost]
-        //[AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        //public async Task<ActionResult> ResetPassword(ResetPasswordViewModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View(model);
-        //    }
-        //    var user = await UserManager.FindByNameAsync(model.Email);
-        //    if (user == null)
-        //    {
-        //        // 不顯示使用者不存在
-        //        return RedirectToAction("ResetPasswordConfirmation", "Account");
-        //    }
-        //    var result = await UserManager.ResetPasswordAsync(user.Id, model.Code, model.Password);
-        //    if (result.Succeeded)
-        //    {
-        //        return RedirectToAction("ResetPasswordConfirmation", "Account");
-        //    }
-        //    AddErrors(result);
-        //    return View();
-        //}
+        //
+        // POST: /Account/Create
+        [HttpPost]
+        public ActionResult Create(vEPSUSER_Manage VUM)
+        {
+            //初始化系統參數
+            Configer.Init();
 
-        ////
-        //// GET: /Account/ResetPasswordConfirmation
-        //[AllowAnonymous]
-        //public ActionResult ResetPasswordConfirmation()
-        //{
-        //    return View();
-        //}
+            //Log記錄用
+            SYSTEMLOG SL = new SYSTEMLOG();
+            SL.UId = Session["UserID"].ToString();
+            SL.Controller = "Account";
+            SL.Action = "Create";
+            SL.TotalCount = 1;
+            SL.StartDateTime = DateTime.Now;
 
-        ////
-        //// POST: /Account/ExternalLogin
-        //[HttpPost]
-        //[AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult ExternalLogin(string provider, string returnUrl)
-        //{
-        //    // 要求重新導向至外部登入提供者
-        //    return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl }));
-        //}
+            string MailServer = Configer.MailServer;
+            int MailServerPort = Configer.MailServerPort;
+            string MailSender = Configer.MailSender;
+            List<string> MailReceiver = Configer.MailReceiver;
 
-        ////
-        //// GET: /Account/SendCode
-        //[AllowAnonymous]
-        //public async Task<ActionResult> SendCode(string returnUrl, bool rememberMe)
-        //{
-        //    var userId = await SignInManager.GetVerifiedUserIdAsync();
-        //    if (userId == null)
-        //    {
-        //        return View("Error");
-        //    }
-        //    var userFactors = await UserManager.GetValidTwoFactorProvidersAsync(userId);
-        //    var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose }).ToList();
-        //    return View(new SendCodeViewModel { Providers = factorOptions, ReturnUrl = returnUrl, RememberMe = rememberMe });
-        //}
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    EPSUSER U = new EPSUSER();
+                    U.UId = VUM.UId;
+                    U.UserName = VUM.UserName;
+                    U.UserPwd = VUM.UserPwd;
+                    U.UserEmail = VUM.UserEmail;
+                    U.RId = VUM.RId;
+                    U.CreateAccount = Session["UserID"].ToString().Trim();
+                    U.CreateTime = DateTime.Now;
+                    U.UpadteAccount = Session["UserID"].ToString().Trim();
+                    U.UpdateTime = DateTime.Now;
 
-        ////
-        //// POST: /Account/SendCode
-        //[HttpPost]
-        //[AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        //public async Task<ActionResult> SendCode(SendCodeViewModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View();
-        //    }
+                    context.EPSUSERS.Add(U);
+                    context.SaveChanges();
 
-        //    // 產生並傳送 Token
-        //    if (!await SignInManager.SendTwoFactorCodeAsync(model.SelectedProvider))
-        //    {
-        //        return View("Error");
-        //    }
-        //    return RedirectToAction("VerifyCode", new { Provider = model.SelectedProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
-        //}
+                    SL.SuccessCount = 1;
+                    SL.FailCount = 0;
+                    SL.Result = true;
+                    SL.Msg = "建立使用者作業成功";
+                    SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
 
-        ////
-        //// GET: /Account/ExternalLoginCallback
-        //[AllowAnonymous]
-        //public async Task<ActionResult> ExternalLoginCallback(string returnUrl)
-        //{
-        //    var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync();
-        //    if (loginInfo == null)
-        //    {
-        //        return RedirectToAction("Login");
-        //    }
+                    //TempData["CreateMsg"] = "<script>alert('新增成功');</script>";
 
-        //    // 若使用者已經有登入資料，請使用此外部登入提供者登入使用者
-        //    var result = await SignInManager.ExternalSignInAsync(loginInfo, isPersistent: false);
-        //    switch (result)
-        //    {
-        //        case SignInStatus.Success:
-        //            return RedirectToLocal(returnUrl);
-        //        case SignInStatus.LockedOut:
-        //            return View("Lockout");
-        //        case SignInStatus.RequiresVerification:
-        //            return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = false });
-        //        case SignInStatus.Failure:
-        //        default:
-        //            // 若使用者沒有帳戶，請提示使用者建立帳戶
-        //            ViewBag.ReturnUrl = returnUrl;
-        //            ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
-        //            return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = loginInfo.Email });
-        //    }
-        //}
+                    return RedirectToAction("Index", "Account");
+                }
+                else
+                {
+                    TempData["CreateMsg"] = "<script>alert('新增失敗');</script>";
 
-        ////
-        //// POST: /Account/ExternalLoginConfirmation
-        //[HttpPost]
-        //[AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        //public async Task<ActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl)
-        //{
-        //    if (User.Identity.IsAuthenticated)
-        //    {
-        //        return RedirectToAction("Index", "Manage");
-        //    }
+                    return RedirectToAction("Create", "Account");
+                }
+            }
+            catch (Exception ex)
+            {
+                SL.EndDateTime = DateTime.Now;
+                SL.TotalCount = 1;
+                SL.SuccessCount = 0;
+                SL.FailCount = 1;
+                SL.Result = false;
+                SL.Msg = "建立使用者作業失敗，" + "錯誤訊息[" + ex.ToString() + "]";
+                SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
 
-        //    if (ModelState.IsValid)
-        //    {
-        //        // 從外部登入提供者處取得使用者資訊
-        //        var info = await AuthenticationManager.GetExternalLoginInfoAsync();
-        //        if (info == null)
-        //        {
-        //            return View("ExternalLoginFailure");
-        //        }
-        //        var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-        //        var result = await UserManager.CreateAsync(user);
-        //        if (result.Succeeded)
-        //        {
-        //            result = await UserManager.AddLoginAsync(user.Id, info.Login);
-        //            if (result.Succeeded)
-        //            {
-        //                await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-        //                return RedirectToLocal(returnUrl);
-        //            }
-        //        }
-        //        AddErrors(result);
-        //    }
+                TempData["CreateMsg"] = "<script>alert('發生異常');</script>";
 
-        //    ViewBag.ReturnUrl = returnUrl;
-        //    return View(model);
-        //}
+                return RedirectToAction("Create", "Account");
+            }
+        }
 
-        ////
-        //// POST: /Account/LogOff
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult LogOff()
-        //{
-        //    AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-        //    return RedirectToAction("Index", "Home");
-        //}
+        public ActionResult Edit(string UId)
+        {
+            //初始化系統參數
+            Configer.Init();
 
-        ////
-        //// GET: /Account/ExternalLoginFailure
-        //[AllowAnonymous]
-        //public ActionResult ExternalLoginFailure()
-        //{
-        //    return View();
-        //}
+            //Log記錄用
+            SYSTEMLOG SL = new SYSTEMLOG();
+            SL.UId = Session["UserID"].ToString();
+            SL.Controller = "Account";
+            SL.Action = "Create";
+            SL.StartDateTime = DateTime.Now;
 
-        //protected override void Dispose(bool disposing)
-        //{
-        //    if (disposing)
-        //    {
-        //        if (_userManager != null)
-        //        {
-        //            _userManager.Dispose();
-        //            _userManager = null;
-        //        }
+            string MailServer = Configer.MailServer;
+            int MailServerPort = Configer.MailServerPort;
+            string MailSender = Configer.MailSender;
+            List<string> MailReceiver = Configer.MailReceiver;
 
-        //        if (_signInManager != null)
-        //        {
-        //            _signInManager.Dispose();
-        //            _signInManager = null;
-        //        }
-        //    }
+            try
+            {
+                vEPSUSER_Manage VUM = new vEPSUSER_Manage();
+                EPSUSER U = context.EPSUSERS.Find(UId);
 
-        //    base.Dispose(disposing);
-        //}
+                VUM.UId = UId;
+                VUM.UserName = U.UserName;
+                VUM.UserPwd = U.UserPwd;
+                VUM.UserEmail = U.UserEmail;
+                VUM.RId = U.RId;
 
-        //#region Helper
-        //// 新增外部登入時用來當做 XSRF 保護
-        //private const string XsrfKey = "XsrfId";
+                var query = from r in context.EPSROLES
+                            select new
+                            {
+                                r.RId,
+                                r.RoleName
+                            };
+                VUM.Role = new SelectList(query, "RId", "RoleName");
+                SL.EndDateTime = DateTime.Now;
+                SL.TotalCount = 1;
+                SL.SuccessCount = 1;
+                SL.FailCount = 0;
+                SL.Result = true;
+                SL.Msg = "取得使用者資料作業成功，UId:[" + UId + "]";
+                SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
 
-        //private IAuthenticationManager AuthenticationManager
-        //{
-        //    get
-        //    {
-        //        return HttpContext.GetOwinContext().Authentication;
-        //    }
-        //}
+                return View(VUM);
+            }
+            catch (Exception ex)
+            {
+                SL.EndDateTime = DateTime.Now;
+                SL.TotalCount = 0;
+                SL.SuccessCount = 0;
+                SL.FailCount = 0;
+                SL.Result = false;
+                SL.Msg = "取得使用者資料作業失敗，" + "錯誤訊息[" + ex.ToString() + "]";
+                SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
 
-        //private void AddErrors(IdentityResult result)
-        //{
-        //    foreach (var error in result.Errors)
-        //    {
-        //        ModelState.AddModelError("", error);
-        //    }
-        //}
+                return RedirectToAction("Create", "Account");
+            }
+        }
 
-        //private ActionResult RedirectToLocal(string returnUrl)
-        //{
-        //    if (Url.IsLocalUrl(returnUrl))
-        //    {
-        //        return Redirect(returnUrl);
-        //    }
-        //    return RedirectToAction("Index", "Home");
-        //}
+        //
+        // POST: /Account/Edit
+        [HttpPost]
+        public ActionResult Edit(vEPSUSER_Manage VUM)
+        {
+            //初始化系統參數
+            Configer.Init();
 
-        //internal class ChallengeResult : HttpUnauthorizedResult
-        //{
-        //    public ChallengeResult(string provider, string redirectUri)
-        //        : this(provider, redirectUri, null)
-        //    {
-        //    }
+            //Log記錄用
+            SYSTEMLOG SL = new SYSTEMLOG();
+            SL.UId = Session["UserID"].ToString();
+            SL.Controller = "Account";
+            SL.Action = "Create";
+            SL.TotalCount = 1;
+            SL.StartDateTime = DateTime.Now;
 
-        //    public ChallengeResult(string provider, string redirectUri, string userId)
-        //    {
-        //        LoginProvider = provider;
-        //        RedirectUri = redirectUri;
-        //        UserId = userId;
-        //    }
+            string MailServer = Configer.MailServer;
+            int MailServerPort = Configer.MailServerPort;
+            string MailSender = Configer.MailSender;
+            List<string> MailReceiver = Configer.MailReceiver;
 
-        //    public string LoginProvider { get; set; }
-        //    public string RedirectUri { get; set; }
-        //    public string UserId { get; set; }
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    EPSUSER U =context.EPSUSERS.Find(VUM.UId);
+                    U.UserPwd = VUM.UserPwd;
+                    U.UserEmail = VUM.UserEmail;
+                    U.RId = U.RId;
+                    U.UpadteAccount = Session["UserID"].ToString().Trim();
+                    U.UpdateTime = DateTime.Now;
+                    context.Entry(U).State= EntityState.Modified;
+                    context.SaveChanges();
 
-        //    public override void ExecuteResult(ControllerContext context)
-        //    {
-        //        var properties = new AuthenticationProperties { RedirectUri = RedirectUri };
-        //        if (UserId != null)
-        //        {
-        //            properties.Dictionary[XsrfKey] = UserId;
-        //        }
-        //        context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
-        //    }
-        //}
-        //#endregion
+                    SL.EndDateTime = DateTime.Now;
+                    SL.TotalCount = 1;
+                    SL.SuccessCount = 1;
+                    SL.FailCount = 0;
+                    SL.Result = true;
+                    SL.Msg = "編輯使用者資料作業成功，UId:[" + VUM.UId + "]";
+                    SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+
+                    //TempData["EditMsg"] = "<script>alert('編輯成功');</script>";
+
+                    return RedirectToAction("Index", "Account");
+                }
+                else
+                {
+                    TempData["EditMsg"] = "<script>alert('編輯失敗');</script>";
+
+                    return RedirectToAction("Edit", "Account", new { UId  = VUM.UId });
+                }
+            }
+            catch (Exception ex)
+            {
+                SL.EndDateTime = DateTime.Now;
+                SL.TotalCount = 1;
+                SL.SuccessCount = 0;
+                SL.FailCount = 1;
+                SL.Result = false;
+                SL.Msg = "編輯使用者作業失敗，" + "錯誤訊息[" + ex.ToString() + "]";
+                SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+
+                TempData["EditMsg"] = "<script>alert('發生異常');</script>";
+
+                return RedirectToAction("Edit", "Account", new { UId = VUM.UId });
+            }
+        }
     }
 }

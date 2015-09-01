@@ -84,7 +84,7 @@ namespace EPS.DAL
             //{
             //    FId = 14,
             //    FuncName = "功能管理",
-            //    Controller = "Func",
+            //    Controller = "Fun",
             //    Action = "Index",
             //    PId=1,
             //    ShowOrder = 44,
