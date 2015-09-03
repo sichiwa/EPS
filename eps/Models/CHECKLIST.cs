@@ -25,16 +25,35 @@ namespace EPS.Models
         [StringLength(1000)]
         [Display(Name = "機房檢核項目敘述")]
         public string Definition { get; set; }
+        [Required]
         [StringLength(20)]
-        [Display(Name = "類別")]
+        [Column(TypeName = "varchar")]
+        [Display(Name = "檢核開始時間")]
+        public string StartTime { get; set; }
+        [Required]
+        [StringLength(20)]
+        [Column(TypeName = "varchar")]
+        [Display(Name = "檢核結束時間")]
+        public string EndTime { get; set; }
+        [Required]
+        [Display(Name = "檢核班別代號")]
+        [StringLength(2)]
+        [Column(TypeName = "char")]
+        public string ShiftID { get; set; } 
+        [StringLength(20)]
+        [Display(Name = "檢核類別代號")]
         public string ClassID { get; set; }
-        [StringLength(6)]
-        [Display(Name = "負責人")]
-        public string ChargerID { get; set; }
         [Required]
         [StringLength(10)]
         [Display(Name = "檢核類型")]
         public string CheckType { get; set; }
+        [Required]
+        [Display(Name = "持續顯示")]
+        public bool AlwaysShow { get; set; }
+        [StringLength(6)]
+        [Display(Name = "負責人")]
+        [Column(TypeName = "varchar")]
+        public string ChargerID { get; set; }
         [Required]
         [Display(Name = "顯示順序")]
         public int ShowOrder { get; set; }

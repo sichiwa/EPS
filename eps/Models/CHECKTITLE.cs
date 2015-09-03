@@ -24,9 +24,6 @@ namespace EPS.Models
         [Display(Name = "機房檢核主題附件")]
         public string Attachment { get; set; }
         [Required]
-        [Display(Name = "是否持續呈現")]
-        public bool AlwaysShow { get; set; }
-        [Required]
         [Column(TypeName = "varchar")]
         [StringLength(6)]
         [Display(Name = "建立者")]

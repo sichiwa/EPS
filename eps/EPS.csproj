@@ -188,9 +188,11 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\DocumentController.cs" />
     <Compile Include="Controllers\FunController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\ProcessController.cs" />
     <Compile Include="Controllers\RoleController.cs" />
     <Compile Include="DAL\EPSContext.cs" />
     <Compile Include="DAL\EPSInitializer.cs" />
@@ -203,6 +205,7 @@
     <Compile Include="Models\CHECKLIST.cs" />
     <Compile Include="Models\CHECKPROCESS.cs" />
     <Compile Include="Models\CHECKPROCESSDETAIL.cs" />
+    <Compile Include="Models\CHECKSHIFT.cs" />
     <Compile Include="Models\CHECKTITLE.cs" />
     <Compile Include="Models\FUNC.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -222,6 +225,8 @@
     <Compile Include="SystemClass\CustomAuthorize.cs" />
     <Compile Include="SystemClass\ShareFunc.cs" />
     <Compile Include="SystemClass\SystemConfig.cs" />
+    <Compile Include="ViewModels\Document\vCHECKLIST_Manage.cs" />
+    <Compile Include="ViewModels\Document\vDOCUMENT_Manage.cs" />
     <Compile Include="ViewModels\EPSROLE\vEPSROLE.cs" />
     <Compile Include="ViewModels\EPSROLE\vEPSROLE_Manage.cs" />
     <Compile Include="ViewModels\EPSUSER\vEPSUSER.cs" />
@@ -236,6 +241,14 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Scripts\angular-messages.js" />
+    <Content Include="Scripts\angular-messages.min.js" />
+    <Content Include="Scripts\angular-mocks.js" />
+    <Content Include="Scripts\angular.js" />
+    <Content Include="Scripts\angular.min.js" />
+    <Content Include="Scripts\App\app.module.js" />
+    <Content Include="Scripts\App\vCheckList.controller.js" />
+    <Content Include="Scripts\App\vCheckList.service.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="NLog.config">
@@ -248,6 +261,8 @@
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
+    <Content Include="Scripts\angular.min.js.map" />
+    <Content Include="Scripts\angular-messages.min.js.map" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -314,9 +329,13 @@
     <Content Include="Views\Fun\Index.cshtml" />
     <Content Include="Views\Fun\Create.cshtml" />
     <Content Include="Views\Fun\Edit.cshtml" />
+    <Content Include="Views\Document\Index.cshtml" />
+    <Content Include="Views\Document\Create.cshtml" />
+    <Content Include="Views\Document\AddItem.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Process\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

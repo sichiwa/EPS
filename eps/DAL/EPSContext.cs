@@ -14,6 +14,7 @@ namespace EPS.DAL
         public DbSet<ROLEFUNCMAPPING> ROLEFUNCMAPPINGS { get; set; }
         public DbSet<ROLEAUTHORITYLIST> ROLEAUTHORITYLISTS { get; set; }
         public DbSet<CHECKCLASS> CHECKCLASSES { get; set; }
+        public DbSet<CHECKSHIFT> CHECKSHIFTS { get; set; }
         public DbSet<FUNC> FUNCS { get; set; }
         public DbSet<SYSTEMLOG> SYSTEMLOG { get; set; }
         public DbSet<CHECKLIST> CHECKLISTS { get; set; }

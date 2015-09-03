@@ -38,8 +38,8 @@ namespace EPS.DAL
             //context.FUNCS.Add(new FUNC()
             //{
             //    FId = 11,
-            //    FuncName = "檢核項目管理",
-            //    Controller = "CheckItem",
+            //    FuncName = "文件管理",
+            //    Controller = "Document",
             //    Action = "Index",
             //    PId=1,
             //    ShowOrder = 41,

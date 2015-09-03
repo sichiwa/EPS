@@ -1,33 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
 namespace EPS.Models
 {
-    [Table("CHECKPROCESSDETAIL", Schema = "EPSMGR")]
-    public class CHECKPROCESSDETAIL
+    [Table("CHECKSHIFT", Schema = "EPSMGR")]
+    public class CHECKSHIFT
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Required]
-        [Display(Name = "唯一流水號")]
-        public int SN { get; set; }
-        //[ForeignKey("CheckSN")]
+        [Key]
         [Required]
         [Column(TypeName = "char")]
-        [StringLength(10)]
-        [Display(Name = "日常檢核件編號")]
-        public string CheckSN { get; set; }
-        //[ForeignKey("CheckID")]
+        [StringLength(2)]
+        [Display(Name = "班別ID")]
+        public string ShiftID { get; set; }
         [Required]
-        [Display(Name = "機房檢核項目ID")]
-        public int CheckID { get; set; }
-        [Required]
-        [StringLength(100)]
-        [Display(Name = "檢核結果")]
-        public string CheckResult { get; set; }
+        [StringLength(50)]
+        [Display(Name = "班別說明")]
+        public string ShiftValue { get; set; }
         [Required]
         [Column(TypeName = "varchar")]
         [StringLength(6)]
