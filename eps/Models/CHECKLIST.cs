@@ -12,11 +12,11 @@ namespace EPS.Models
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Required]
-        [Display(Name = "唯一流水號")]
-        public int SN { get; set; }
+        [Display(Name = "檢核項目ID")]
+        public int ListID { get; set; }
         //[ForeignKey("CheckID")]
         [Required]
-        [Display(Name = "機房檢核項目ID")]
+        [Display(Name = "機房檢核文件ID")]
         public int CheckID { get; set; }
         [Required]
         [StringLength(200)]

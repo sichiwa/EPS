@@ -1,0 +1,204 @@
+﻿@model EPS.ViewModels.PROCESS.vCHECKPROCESS
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>檢核明細</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/Site.css" rel="stylesheet" />
+    <link href="~/Content/jquery-ui.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="checkdiv" class="row">
+        <div id="tabs">
+            <ul id="ul">
+                @{
+                    string link = "#" + Model.CheckSN;
+                    <li>
+                        <a href=@link>@Model.Title</a>
+                </li>
+                }
+            </ul>
+            <div id=@Model.CheckSN>
+                <table class="table">
+                    <tr>
+                        <td>檢核時間</td>
+                        <td>檢核項目</td>
+                        <td>檢核結果</td>
+                        <td>狀態</td>
+                    </tr>
+                    @foreach (var item in Model.vCHECKDETAILs)
+                    {
+                        string Status = "檢查中";
+                        string Disabled = "";
+                        if (item.CloseStatus == "晚班檢核完畢" || item.CloseStatus == "假日班檢核完畢")
+                        {
+                            Status = "領班人員覆核中";
+                            Disabled = "disabled";
+                            //btnDisabled = true;
+                        }
+                        else if (item.CloseStatus == "領班覆核完畢")
+                        {
+                            Status = "主管覆核中";
+                            Disabled = "disabled";
+                            //btnDisabled = true;
+                        }
+                        else if (item.CloseStatus == "主管覆核完畢 ")
+                        {
+                            Status = "系統部主管覆核中";
+                            Disabled = "disabled";
+                            //btnDisabled = true;
+                        }
+                        else if (item.CloseStatus == "系統部主管覆核完畢")
+                        {
+                            Status = "已結案";
+                            Disabled = "disabled";
+                            //btnDisabled = true;
+                        }
+                        <tr>
+                            <td>@item.StartTime</td>
+                            <td>@item.ListName</td>
+                            @if (item.CheckType != "3")
+                            {
+                                string ListID = "CheckResult" + item.ListID;
+                                if (item.CheckType == "2")
+                                {
+                                    if (Disabled == "")
+                                    {
+                                        <td>@Html.TextAreaFor(model => item.CheckResult, 15, 100, new { id = ListID, @class = "form-control autocheck", @placeholder = "請輸入檢核結果", data = @item.CheckID, ListID = @item.ListID })</td>
+                                    }
+                                    else
+                                    {
+                                        <td>@Html.TextAreaFor(model => item.CheckResult, 15, 100, new { id = ListID, @class = "form-control autocheck", @placeholder = "請輸入檢核結果", data = @item.CheckID, ListID = @item.ListID, @Disabled })</td>
+                                    }
+                                }
+                                else
+                                {
+                                    if (Disabled == "")
+                                    {
+                                        <td>@Html.EditorFor(model => item.CheckResult, new { @class = "form-control autocheck", @placeholder = "請輸入檢核結果", data = @item.CheckID, ListID = @item.ListID })</td>
+                                    }
+                                    else
+                                    {
+                                        <td>@Html.EditorFor(model => item.CheckResult, new { @class = "form-control autocheck", @placeholder = "請輸入檢核結果", data = @item.CheckID, ListID = @item.ListID, @Disabled })</td>
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                string ListID = "CheckResult" + item.ListID;
+
+                                if (@item.CheckResult == "true")
+                                {
+                                    if (Disabled == "")
+                                    {
+                                        @*<td>@Html.CheckBox("檢核結果", new { id = ListID, @checked = @item.CheckResult, @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID })</td>*@
+                                        <td>
+                                            <label class="radio-inline">
+                                                @Html.RadioButton(ListID, "正常", new { @checked = "checked", @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID }):正常
+                                            </label>
+                                            <label class="radio-inline">
+                                                @Html.RadioButton(ListID, "異常", new { @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID }):異常
+                                            </label>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        @*<td>@Html.CheckBox("檢核結果", new { id = ListID, @checked = @item.CheckResult, @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled })</td>*@
+                                        <td>
+                                            <label class="radio-inline">
+                                                @Html.RadioButton(ListID, "正常", new { @checked = "checked", @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):正常
+                                            </label>
+                                            <label class="radio-inline">
+                                                @Html.RadioButton(ListID, "異常", new { @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):異常
+                                            </label>
+                                        </td>
+                                    }
+                                }
+                                else if (@item.CheckResult == "false")
+                                {
+                                    if (Disabled == "")
+                                    {
+                                        @*<td>@Html.CheckBox("檢核結果", new { id = ListID, @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID })</td>*@
+                                        <td>
+                                            <label class="radio-inline">
+                                                @Html.RadioButton(ListID, "正常", new { @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID }):正常
+                                            </label>
+                                            <label class="radio-inline">
+                                                @Html.RadioButton(ListID, "異常", new { @checked = "checked", @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID }):異常
+                                            </label>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        @*<td>@Html.CheckBox("檢核結果", new { id = ListID, @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled })</td>*@
+                                        <td>
+                                            <label class="radio-inline">
+                                                @Html.RadioButton(ListID, "正常", new { @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):正常
+                                            </label>
+                                            <label class="radio-inline">
+                                                @Html.RadioButton(ListID, "異常", new { @checked = "checked", @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):異常
+                                            </label>
+                                        </td>
+                                    }
+                                }
+
+                                else
+                                {
+                                    if (Disabled == "")
+                                    {
+                                        @*<td>@Html.CheckBox("檢核結果", new { id = ListID, @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID })</td>*@
+                                        <td>
+                                            <label class="radio-inline">
+                                                @Html.RadioButton(ListID, "正常", new { @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID }):正常
+                                            </label>
+                                            <label class="radio-inline">
+                                                @Html.RadioButton(ListID, "異常", new { @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID }):異常
+                                            </label>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        @*<td>@Html.CheckBox("檢核結果", new { id = ListID, @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled })</td>*@
+                                        <td>
+                                            <label class="radio-inline">
+                                                @Html.RadioButton(ListID, "正常", new { @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):正常
+                                            </label>
+                                            <label class="radio-inline">
+                                                @Html.RadioButton(ListID, "異常", new { @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):異常
+                                            </label>
+                                        </td>
+                                    }
+                                }
+                            }
+
+                            <td>
+                                @Html.HiddenFor(model => item.ListID)
+                                @Html.HiddenFor(model => item.CheckID)
+                                <label class="control-label">@Status</label>
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+
+        </div>
+    </div>
+    <script src="~/Scripts/jquery-2.1.4.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/respond.min.js"></script>
+    <script src="~/Scripts/jquery-ui-1.11.4.min.js"></script>
+    <script>
+        $(function () {
+            $("#tabs").tabs();
+        });
+
+    </script>
+</body>
+</html>

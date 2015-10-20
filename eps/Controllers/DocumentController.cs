@@ -64,7 +64,6 @@ namespace EPS.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            return View();
         }
 
         public ActionResult Create()
@@ -139,7 +138,6 @@ namespace EPS.Controllers
                     CT.Title = VDM.Title;
                     CT.Definition = VDM.Definition;
                     CT.Attachment = VDM.Attachment;
-
                     CT.CreateAccount = Session["UserID"].ToString().Trim();
                     CT.CreateTime = DateTime.Now;
                     CT.UpadteAccount = Session["UserID"].ToString().Trim();
@@ -157,7 +155,7 @@ namespace EPS.Controllers
 
                     //TempData["CreateMsg"] = "<script>alert('新增成功');</script>";
 
-                    return RedirectToAction("AddItem", "Document",new {CheckID= CT.CheckID, CheckTitle= CT.Title });
+                    return RedirectToAction("AddItem", "Document", new { CheckID = CT.CheckID, CheckTitle = CT.Title });
                 }
                 else
                 {
@@ -182,34 +180,355 @@ namespace EPS.Controllers
             }
         }
 
-        public ActionResult AddItem(int CheckID,string Title)
+        public ActionResult ListItem(int CheckID, string Title)
         {
-            TempData["CheckID"] = CheckID;
-            TempData["Title"] = Title;
-            return View();
+            //初始化系統參數
+            Configer.Init();
+
+            //Log記錄用
+            SYSTEMLOG SL = new SYSTEMLOG();
+            SL.UId = Session["UserID"].ToString();
+            SL.Controller = "Document";
+            SL.Action = "ListItem";
+            SL.TotalCount = 1;
+            SL.StartDateTime = DateTime.Now;
+
+            string MailServer = Configer.MailServer;
+            int MailServerPort = Configer.MailServerPort;
+            string MailSender = Configer.MailSender;
+            List<string> MailReceiver = Configer.MailReceiver;
+
+            try
+            {
+                TempData["CheckID"] = CheckID;
+                TempData["Title"] = Title;
+                var query = from cl in context.CHECKLISTS
+                            where cl.CheckID == CheckID
+                            orderby cl.ShowOrder descending
+                            join cs in context.CHECKSHIFTS on cl.ShiftID equals cs.ShiftID
+                            join c in context.CHECKCLASSES on cl.ClassID equals c.ClassID
+                            join u in context.EPSUSERS on cl.ChargerID equals u.UId into x
+                            from y in x.DefaultIfEmpty()
+                            select new vCHECKLIST
+                            {
+                                ListID = cl.ListID,
+                                CheckID=cl.CheckID,
+                                ListName=cl.ListName,
+                                Definition=cl.Definition,
+                                StartTime=cl.StartTime,
+                                EndTime=cl.EndTime,
+                                ShiftName=cs.ShiftValue,
+                                ClassName=c.ClassValue,
+                                Charger=y.UserName,
+                                AlwaysShow=cl.AlwaysShow,
+                                ShowOrder=cl.ShowOrder,
+                                CreateAccount = cl.CreateAccount,
+                                CreateTime = cl.CreateTime,
+                                UpadteAccount = cl.UpadteAccount,
+                                UpdateTime = cl.UpdateTime
+                            };
+
+                if (query.Count() > 0)
+                {
+                    SL.EndDateTime = DateTime.Now;
+                    SL.TotalCount = query.Count();
+                    SL.SuccessCount = query.Count();
+                    SL.FailCount = 0;
+                    SL.Result = true;
+                    SL.Msg = "取得檢核項目清單作業成功";
+                    SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+
+                    return View(query.ToList());
+                }
+                else
+                {
+                    SL.EndDateTime = DateTime.Now;
+                    SL.TotalCount = 0;
+                    SL.SuccessCount = 0;
+                    SL.FailCount = 0;
+                    SL.Result = true;
+                    SL.Msg = "取得檢核項目清單作成功" + "訊息["+ Title + "文件內尚未有檢核項目]";
+                    SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+
+                    return RedirectToAction("Index", "Dcoument");
+                }
+            }
+            catch (Exception ex)
+            {
+                SL.EndDateTime = DateTime.Now;
+                SL.TotalCount = 0;
+                SL.SuccessCount = 0;
+                SL.FailCount = 0;
+                SL.Result = false;
+                SL.Msg = "取得檢核項目清單作業失敗，" + "錯誤訊息[" + ex.ToString() + "]";
+                SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+
+                return RedirectToAction("Index", "Dcoument");
+            }
+        }
+
+        public ActionResult AddItem(int CheckID, string Title)
+        {
+            //初始化系統參數
+            Configer.Init();
+
+            //Log記錄用
+            SYSTEMLOG SL = new SYSTEMLOG();
+            SL.UId = Session["UserID"].ToString();
+            SL.Controller = "Document";
+            SL.Action = "AddItem";
+            SL.TotalCount = 1;
+            SL.StartDateTime = DateTime.Now;
+
+            string MailServer = Configer.MailServer;
+            int MailServerPort = Configer.MailServerPort;
+            string MailSender = Configer.MailSender;
+            List<string> MailReceiver = Configer.MailReceiver;
+
+            try
+            {
+                vCHECKLIST_Manage VCTM = new vCHECKLIST_Manage();
+                VCTM.CheckID = CheckID;
+                VCTM.CheckTitle = Title;
+                TempData["Title"] = Title;
+
+                //取得班別清單
+                var query1 = from s in context.CHECKSHIFTS
+                             select new
+                             {
+                                 s.ShiftID,
+                                 s.ShiftValue
+                             };
+
+                VCTM.ShiftIDList = new SelectList(query1, "ShiftID", "ShiftValue");
+
+                //取得分類清單
+                var query2 = from c in context.CHECKCLASSES
+                             select new
+                             {
+                                 c.ClassID,
+                                 c.ClassValue
+                             };
+
+                VCTM.ClassIDList = new SelectList(query2, "ClassID", "ClassValue");
+
+                //取得負責人清單
+                var query = from u in context.EPSUSERS
+                            select new
+                            {
+                                u.UId,
+                                u.UserName
+                            };
+
+                VCTM.ChargerList = new SelectList(query, "UId", "UserName");
+                VCTM.AlwaysShow = true;
+                VCTM.StartTime = "00:00";
+                VCTM.EndTime = "24:00";
+                VCTM.ShowOrder = getShowOrder(CheckID);
+
+                SL.EndDateTime = DateTime.Now;
+                SL.TotalCount = 0;
+                SL.SuccessCount = 0;
+                SL.FailCount = 0;
+                SL.Result = true;
+                SL.Msg = "建立檢核項目表單作業成功";
+                SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+
+                return View(VCTM);
+            }
+            catch (Exception ex)
+            {
+                SL.EndDateTime = DateTime.Now;
+                SL.TotalCount = 1;
+                SL.SuccessCount = 0;
+                SL.FailCount = 1;
+                SL.Result = false;
+                SL.Msg = "建立檢核項目表單作業失敗，" + "錯誤訊息[" + ex.ToString() + "]";
+                SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+
+                TempData["CreateMsg"] = "<script>alert('發生異常');</script>";
+
+                return RedirectToAction("Create", "Document");
+            }
         }
 
         [HttpPost]
-        public ActionResult AddItem(vCHECKLIST_Manage VCTM)
+        public ActionResult AddItem(vCHECKLIST_Manage VCLM)
         {
-            if (ModelState.IsValid)
+            //初始化系統參數
+            Configer.Init();
+
+            //Log記錄用
+            SYSTEMLOG SL = new SYSTEMLOG();
+            SL.UId = Session["UserID"].ToString();
+            SL.Controller = "Document";
+            SL.Action = "AddItem";
+            SL.TotalCount = 1;
+            SL.StartDateTime = DateTime.Now;
+
+            string MailServer = Configer.MailServer;
+            int MailServerPort = Configer.MailServerPort;
+            string MailSender = Configer.MailSender;
+            List<string> MailReceiver = Configer.MailReceiver;
+
+            try
             {
+                if (ModelState.IsValid)
+                {
+                    CHECKLIST CL = new CHECKLIST();
+                    CL.CheckID = VCLM.CheckID;
+                    CL.ListName = VCLM.ListName;
+                    CL.Definition = VCLM.Definition;
+                    CL.CheckType = VCLM.CheckType;
+                    CL.ClassID = VCLM.ClassID;
+                    CL.ChargerID = VCLM.ChargerID;
+                    CL.ShiftID = VCLM.ShiftID;
+                    CL.StartTime = VCLM.StartTime;
+                    CL.EndTime = VCLM.EndTime;
+                    CL.AlwaysShow = VCLM.AlwaysShow;
+                    CL.ShowOrder = VCLM.ShowOrder;
+                    CL.CreateAccount = Session["UserID"].ToString().Trim();
+                    CL.CreateTime = DateTime.Now;
+                    CL.UpadteAccount = Session["UserID"].ToString().Trim();
+                    CL.UpdateTime = DateTime.Now;
 
+                    context.CHECKLISTS.Add(CL);
+                    context.SaveChanges();
 
+                    SL.EndDateTime = DateTime.Now;
+                    SL.SuccessCount = 1;
+                    SL.FailCount = 0;
+                    SL.Result = true;
+                    SL.Msg = "建立檢核項目作業成功";
+                    SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+
+                    //TempData["CreateMsg"] = "<script>alert('新增成功');</script>";
+
+                    return RedirectToAction("AddItem", "Document", new { CheckID = VCLM.CheckID, Title = VCLM.CheckTitle });
+
+                }
+                else
+                {
+                    TempData["CreateMsg"] = "<script>alert('新增失敗');</script>";
+
+                    return RedirectToAction("AddItem", "Document", new { CheckID = VCLM.CheckID, Title = VCLM.CheckTitle });
+                }
             }
+            catch (Exception ex)
+            {
+                SL.EndDateTime = DateTime.Now;
+                SL.TotalCount = 1;
+                SL.SuccessCount = 0;
+                SL.FailCount = 1;
+                SL.Result = false;
+                SL.Msg = "建立檢核項目作業失敗，" + "錯誤訊息[" + ex.ToString() + "]";
+                SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
 
-            return RedirectToAction("Index", "Document");
+                TempData["CreateMsg"] = "<script>alert('發生異常');</script>";
+
+                return RedirectToAction("AddItem", "Document", new { CheckID = VCLM.CheckID, Title = VCLM.CheckTitle });
+            }
         }
 
-        [HttpGet]
-        public int getShowOrder(int CheckID)
+        public ActionResult EditItem(int SN)
         {
-            int ShowOrder = 1;
+            //初始化系統參數
+            Configer.Init();
 
-            var query=context.CHECKLISTS.Where(b => b.CheckID == CheckID).OrderByDescending(b => b.ShowOrder).First();
-            ShowOrder = query.ShowOrder;
+            //Log記錄用
+            SYSTEMLOG SL = new SYSTEMLOG();
+            SL.UId = Session["UserID"].ToString();
+            SL.Controller = "Document";
+            SL.Action = "EditItem";
+            SL.TotalCount = 1;
+            SL.StartDateTime = DateTime.Now;
 
-            return ShowOrder+1;
+            string MailServer = Configer.MailServer;
+            int MailServerPort = Configer.MailServerPort;
+            string MailSender = Configer.MailSender;
+            List<string> MailReceiver = Configer.MailReceiver;
+
+            try
+            {
+                CHECKLIST CL = context.CHECKLISTS.Find(SN);
+                CHECKTITLE CT = context.CHECKTITLES.Find(CL.CheckID);
+                vCHECKLIST_Manage VCTM = new vCHECKLIST_Manage();
+                VCTM.CheckID = CL.CheckID;
+                VCTM.ListName = CL.ListName;
+                VCTM.Definition = CL.Definition;
+                VCTM.CheckTitle = CT.Title;
+                TempData["CheckID"] = CL.CheckID;
+                TempData["Title"] = CT.Title;
+
+                //取得班別清單
+                var query1 = from s in context.CHECKSHIFTS
+                             select new
+                             {
+                                 s.ShiftID,
+                                 s.ShiftValue
+                             };
+                VCTM.ShiftID = CL.ShiftID;
+                VCTM.ShiftIDList = new SelectList(query1, "ShiftID", "ShiftValue");
+
+                //取得分類清單
+                var query2 = from c in context.CHECKCLASSES
+                             select new
+                             {
+                                 c.ClassID,
+                                 c.ClassValue
+                             };
+                VCTM.ClassID = CL.ClassID;
+                VCTM.ClassIDList = new SelectList(query2, "ClassID", "ClassValue");
+
+                //取得負責人清單
+                var query = from u in context.EPSUSERS
+                            select new
+                            {
+                                u.UId,
+                                u.UserName
+                            };
+                VCTM.ChargerID = CL.ChargerID;
+                VCTM.ChargerList = new SelectList(query, "UId", "UserName");
+                VCTM.CheckType = CL.CheckType;
+                VCTM.AlwaysShow = CL.AlwaysShow;
+                VCTM.StartTime = CL.StartTime;
+                VCTM.EndTime = CL.EndTime;
+                VCTM.ShowOrder = CL.ShowOrder;
+
+                SL.EndDateTime = DateTime.Now;
+                SL.TotalCount = 1;
+                SL.SuccessCount = 1;
+                SL.FailCount = 0;
+                SL.Result = true;
+                SL.Msg = "取得檢核項目資料作業成功，SN:[" + SN.ToString() + "]"; 
+                SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+
+                return View(VCTM);
+            }
+            catch (Exception ex)
+            {
+                SL.EndDateTime = DateTime.Now;
+                SL.TotalCount = 1;
+                SL.SuccessCount = 0;
+                SL.FailCount = 1;
+                SL.Result = false;
+                SL.Msg = "取得檢核項目資料作業失敗，" + "錯誤訊息[" + ex.ToString() + "]";
+                SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+
+                return RedirectToAction("ListItem", "Document");
+            }
+        }
+
+        private int getShowOrder(int CheckID)
+        {
+            int ShowOrder = 0;
+
+            var query = context.CHECKLISTS.Where(b => b.CheckID == CheckID).OrderByDescending(b => b.ShowOrder);
+            if (query.Count() > 0)
+            {
+                ShowOrder = query.First().ShowOrder;
+            }
+            return ShowOrder + 1;
         }
     }
 }

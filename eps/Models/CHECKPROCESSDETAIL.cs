@@ -22,12 +22,24 @@ namespace EPS.Models
         public string CheckSN { get; set; }
         //[ForeignKey("CheckID")]
         [Required]
-        [Display(Name = "機房檢核項目ID")]
+        [Display(Name = "機房檢核文件ID")]
         public int CheckID { get; set; }
+        [Required]
+        [Display(Name = "檢核項目ID")]
+        public int ListID { get; set; }
+        [Required]
+        [Display(Name = "檢核班別代號")]
+        [StringLength(2)]
+        [Column(TypeName = "char")]
+        public string ShiftID { get; set; }
         [Required]
         [StringLength(100)]
         [Display(Name = "檢核結果")]
         public string CheckResult { get; set; }
+        [Required]
+        [StringLength(8)]
+        [Display(Name = "檢核日期")]
+        public string CheckDate { get; set; }
         [Required]
         [Column(TypeName = "varchar")]
         [StringLength(6)]

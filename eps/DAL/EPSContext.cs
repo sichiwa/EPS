@@ -24,5 +24,8 @@ namespace EPS.DAL
         public DbSet<MAILSERVER> MAILSERVERS { get; set; }
         public DbSet<MAILTEMPLATE> MAILTEMPLATES { get; set; }
         public DbSet<REVIEWPROFILE> REVIEWPROFILES { get; set; }
+        public DbSet<REVIEWDATA> REVIEWDATAS { get; set; }
+        public DbSet<REJECTREASON> REJECTREASONS { get; set; }
+        public DbSet<REJECTPROFILE> REJECTPROFILES { get; set; }
     }
 }

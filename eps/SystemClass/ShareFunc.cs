@@ -12,11 +12,13 @@ using System.Linq.Expressions;
 using System.Net;
 using EPS.DAL;
 using EPS.Models;
+using System.Globalization;
 
 namespace EPS.SystemClass
 {
     public class ShareFunc
     {
+        EPSContext context = new EPSContext();
         SystemConfig Configer = new SystemConfig();
         public static Logger logger = NLog.LogManager.GetCurrentClassLogger();
         private string _ConnStr;
@@ -271,6 +273,20 @@ namespace EPS.SystemClass
                 }
             }
             return Role;
+        }
+
+        public SelectList getUserList(string nowUser)
+        {
+            var query = context.EPSUSERS.ToList();
+
+            //List<SelectListItem> items = query.Select(b => new SelectListItem() {
+            //    Text=b.UserName,
+            //    Value=b.UId,
+            //}).ToList();
+
+            SelectList UserList = new SelectList(query, "UId", "UserName", nowUser);
+
+            return UserList;
         }
 
         ///// <summary>
@@ -618,5 +634,527 @@ namespace EPS.SystemClass
         //    }
         //    else { return true; }
         //}       
+
+        /// <summary>
+        /// 通知覆核人
+        /// </summary>
+        /// <param name="CloseStatus">結案狀態</param>
+        /// <param name="UId">執行人</param>
+        /// <param name="CheckSN">日常檢核件編號</param>
+        /// <param name="CheckTitle">機房檢核主題名稱</param>
+        /// <param name="CheckDate">檢核日期</param>
+        public void emailNotify2Review(string CloseStatus,string UId,
+                                         string CheckSN,string CheckTitle,
+                                         string CheckDate,string Action)
+        {
+            //初始化系統參數
+            Configer.Init();
+
+            //Log記錄用
+            SYSTEMLOG SL = new SYSTEMLOG();
+            SL.UId = UId;
+            SL.Controller = "Process";
+            SL.Action = "emailNotify2Reviewer";
+            SL.StartDateTime = DateTime.Now;
+
+            string MailServer = Configer.MailServer;
+            int MailServerPort = Configer.MailServerPort;
+            string MailSender = Configer.MailSender;
+            List<string> MailReceiver = Configer.MailReceiver;
+
+            try
+            {
+                var query = context.REVIEWPROFILES.Where(b => b.CloseStauts == CloseStatus).ToList();
+                if (query.Count() > 0)
+                {
+                    foreach (var item in query)
+                    {
+                        MAILTEMPLATE MT = context.MAILTEMPLATES.Find(item.MailTempID);
+
+                        if (MT != null)
+                        {
+                            MAILSERVER MS = context.MAILSERVERS.Find(MT.MailServerID);
+                            if (MS != null)
+                            {
+                                var queryUsers = context.EPSUSERS.Where(b => b.RId == item.NextReview).ToList();
+                                if (queryUsers.Count() > 0)
+                                {
+                                    StringBuilder UserNameb =new StringBuilder();
+                                    string UserName = "";
+                                    foreach (var U in queryUsers)
+                                    {
+                                        UserNameb.Append(U.UserName + Configer.SplitSymbol);
+                                    }
+                                    UserName = StringProcessor.CutlastChar(UserName.ToString());
+                                    //組合通知信標頭
+                                    DateTime parsed;
+                                    string parsedTime = "取得檢核件時間錯誤";
+                                    if (DateTime.TryParseExact(CheckDate, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed))
+                                    {
+                                        parsedTime = parsed.ToString("yyyy-MM-dd");
+                                    }
+
+                                    MT.Subject.Replace("#Time", parsedTime)
+                                              .Replace("#Action", Action);
+
+                                    MT.Body.Replace("#UserName", UserName);
+
+                                    char[] s = {','}; 
+                                    List<string> Receivers = StringProcessor.SplitString2Array(UserName,s);
+
+                                    //寄信
+                                    string SendResult = SendEmail(MS.ServerIP, MS.ServerPort, MT.Sender, Receivers, MT.Subject, MT.Body);
+                                    if (SendResult == "success")
+                                    {
+                                        SL.EndDateTime = DateTime.Now;
+                                        SL.TotalCount = query.Count();
+                                        SL.SuccessCount = query.Count();
+                                        SL.FailCount = 0;
+                                        SL.Result = true;
+                                        SL.Msg = "通知[" + CheckSN + "]覆核人流程作業成功";
+                                        log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+                                    }
+                                    else
+                                    {
+                                        //寄信失敗
+                                        SL.EndDateTime = DateTime.Now;
+                                        SL.TotalCount = 0;
+                                        SL.SuccessCount = 0;
+                                        SL.FailCount = 0;
+                                        SL.Result = true;
+                                        SL.Msg = "通知[" + CheckSN + "]覆核人流程作業失敗，" + "錯誤訊息[" + SendResult + "]";
+                                        log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+                                    }
+                                }
+                                else
+                                {
+                                    //沒有角色
+                                    SL.EndDateTime = DateTime.Now;
+                                    SL.TotalCount = 0;
+                                    SL.SuccessCount = 0;
+                                    SL.FailCount = 0;
+                                    SL.Result = true;
+                                    SL.Msg = "通知[" + CheckSN + "]覆核人流程作業失敗，沒有設定角色";
+                                    log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+                                }
+                            }
+                            else
+                            {
+                                //沒有設定MAILSERVER
+                                SL.EndDateTime = DateTime.Now;
+                                SL.TotalCount = 0;
+                                SL.SuccessCount = 0;
+                                SL.FailCount = 0;
+                                SL.Result = true;
+                                SL.Msg = "通知[" + CheckSN + "]覆核人流程作業失敗，沒有設定MAILSERVER";
+                                log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+                            }
+                        }
+                        else
+                        {
+                            //沒有設定MAILTEMPLATE
+                            SL.EndDateTime = DateTime.Now;
+                            SL.TotalCount = 0;
+                            SL.SuccessCount = 0;
+                            SL.FailCount = 0;
+                            SL.Result = true;
+                            SL.Msg = "通知[" + CheckSN + "]覆核人流程作業失敗，沒有設定MAILTEMPLATE";
+                            log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+                        }
+                    }
+                }
+                else
+                {
+                    //沒有設定REVIEWPROFILE
+                    SL.EndDateTime = DateTime.Now;
+                    SL.TotalCount = 0;
+                    SL.SuccessCount = 0;
+                    SL.FailCount = 0;
+                    SL.Result = true;
+                    SL.Msg = "通知[" + CheckSN + "]覆核人流程作業失敗，沒有設定REVIEWPROFILE";
+                    log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                SL.EndDateTime = DateTime.Now;
+                SL.TotalCount = 0;
+                SL.SuccessCount = 0;
+                SL.FailCount = 0;
+                SL.Result = false;
+                SL.Msg = "通知[" + CheckSN + "]覆核人流程作業失敗，" + "錯誤訊息[" + ex.ToString() + "]";
+                log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+            }
+        }
+
+        public void emailNotify2ReviewbyDate(string CloseStatus, string UId,
+                                             string CheckDate,string Action)
+        {
+            //初始化系統參數
+            Configer.Init();
+
+            //Log記錄用
+            SYSTEMLOG SL = new SYSTEMLOG();
+            SL.UId = UId;
+            SL.Controller = "Process";
+            SL.Action = "emailNotify2ReviewerbyDate";
+            SL.StartDateTime = DateTime.Now;
+
+            string MailServer = Configer.MailServer;
+            int MailServerPort = Configer.MailServerPort;
+            string MailSender = Configer.MailSender;
+            List<string> MailReceiver = Configer.MailReceiver;
+
+            DateTime parsed;
+            string parsedTime = "取得檢核件時間錯誤";
+            if (DateTime.TryParseExact(CheckDate, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed))
+            {
+                parsedTime = parsed.ToString("yyyy-MM-dd");
+            }
+
+            try
+            {
+               
+                var query = context.REVIEWPROFILES.Where(b => b.CloseStauts == CloseStatus).ToList();
+                if (query.Count() > 0)
+                {
+                    foreach (var item in query)
+                    {
+                        MAILTEMPLATE MT = context.MAILTEMPLATES.Find(item.MailTempID);
+
+                        if (MT != null)
+                        {
+                            MAILSERVER MS = context.MAILSERVERS.Find(MT.MailServerID);
+                            if (MS != null)
+                            {
+                                var queryUsers = context.EPSUSERS.Where(b => b.RId == item.NextReview).ToList();
+                                if (queryUsers.Count() > 0)
+                                {
+                                    StringBuilder UserNameb = new StringBuilder();
+                                    StringBuilder UserEmailb = new StringBuilder();
+                                    string UserName = "";
+                                    string UserEmail = "";
+                                    foreach (var U in queryUsers)
+                                    {
+                                        UserNameb.Append(U.UserName + Configer.SplitSymbol);
+                                        UserEmailb.Append(U.UserEmail + Configer.SplitSymbol);
+                                    }
+                                    UserName = StringProcessor.CutlastChar(UserNameb.ToString());
+                                    UserEmail = StringProcessor.CutlastChar(UserEmailb.ToString());
+                                    //組合通知信標頭
+                                    string MailSubject = MT.Subject.Replace("#Time", parsedTime)
+                                              .Replace("#Action", Action);
+                                    //組合通知信內容
+                                    string MailBody = "";
+                                    string HtmlBody = "";
+                                    HtmlBody = "<table border=1 with='80%'>";
+                                    HtmlBody += "<tr><td>檢核編號</td>";
+                                    HtmlBody += "<td>表單名稱</td>";
+                                    HtmlBody += "<td>早班</td>";
+                                    HtmlBody += "<td>晚班</td>";
+                                    HtmlBody += "<td>假日班</td></tr>";
+
+                                    var cps = context.CHECKPROCESSES.Where(b => b.CheckDate == CheckDate).ToList();
+                                  
+                                    foreach (var cp in cps)
+                                    {
+                                        HtmlBody += "<tr>";
+                                        HtmlBody += "<td>" + cp.CheckSN +"</td>" ;
+                                        CHECKTITLE ct = context.CHECKTITLES.Find(cp.CheckID);
+                                        HtmlBody += "<td>" + ct.Definition + "</td>";
+                                        HtmlBody += "<td>" + cp.ShiftOne + "</td>";
+                                        HtmlBody += "<td>" + cp.ShiftThree + "</td>";
+                                        HtmlBody += "<td>" + cp.ShiftFour + "</td>";
+                                        MailBody += "</tr>";
+                                    }
+                                    HtmlBody += "</table>";
+                                    MailBody = MT.Body.Replace("#UserName", UserName)
+                                                      .Replace("#Body", HtmlBody)
+                                                      .Replace("#Link", "<a>機房表單系統連結</a>");
+
+                                    char[] s = { ',' };
+                                    List<string> Receivers = StringProcessor.SplitString2Array(UserEmail, s);
+
+                                    //寄信
+                                    string SendResult = SendEmail(MS.ServerIP, MS.ServerPort, MT.Sender, Receivers, MailSubject, MailBody);
+                                    if (SendResult == "success")
+                                    {
+                                        SL.EndDateTime = DateTime.Now;
+                                        SL.TotalCount = query.Count();
+                                        SL.SuccessCount = query.Count();
+                                        SL.FailCount = 0;
+                                        SL.Result = true;
+                                        SL.Msg = "通知[" + parsedTime + "]覆核人流程作業成功";
+                                        log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+                                    }
+                                    else
+                                    {
+                                        //寄信失敗
+                                        SL.EndDateTime = DateTime.Now;
+                                        SL.TotalCount = 0;
+                                        SL.SuccessCount = 0;
+                                        SL.FailCount = 0;
+                                        SL.Result = true;
+                                        SL.Msg = "通知[" + parsedTime + "]覆核人流程作業失敗，" + "錯誤訊息[" + SendResult + "]";
+                                        log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+                                    }
+                                }
+                                else
+                                {
+                                    //沒有角色
+                                    SL.EndDateTime = DateTime.Now;
+                                    SL.TotalCount = 0;
+                                    SL.SuccessCount = 0;
+                                    SL.FailCount = 0;
+                                    SL.Result = true;
+                                    SL.Msg = "通知[" + parsedTime + "]覆核人流程作業失敗，沒有設定角色";
+                                    log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+                                }
+                            }
+                            else
+                            {
+                                //沒有設定MAILSERVER
+                                SL.EndDateTime = DateTime.Now;
+                                SL.TotalCount = 0;
+                                SL.SuccessCount = 0;
+                                SL.FailCount = 0;
+                                SL.Result = true;
+                                SL.Msg = "通知[" + parsedTime + "]覆核人流程作業失敗，沒有設定MAILSERVER";
+                                log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+                            }
+                        }
+                        else
+                        {
+                            //沒有設定MAILTEMPLATE
+                            SL.EndDateTime = DateTime.Now;
+                            SL.TotalCount = 0;
+                            SL.SuccessCount = 0;
+                            SL.FailCount = 0;
+                            SL.Result = true;
+                            SL.Msg = "通知[" + parsedTime + "]覆核人流程作業失敗，沒有設定MAILTEMPLATE";
+                            log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+                        }
+                    }
+                }
+                else
+                {
+                    //沒有設定REVIEWPROFILE
+                    SL.EndDateTime = DateTime.Now;
+                    SL.TotalCount = 0;
+                    SL.SuccessCount = 0;
+                    SL.FailCount = 0;
+                    SL.Result = true;
+                    SL.Msg = "通知[" + parsedTime + "]覆核人流程作業失敗，沒有設定REVIEWPROFILE";
+                    log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                SL.EndDateTime = DateTime.Now;
+                SL.TotalCount = 0;
+                SL.SuccessCount = 0;
+                SL.FailCount = 0;
+                SL.Result = false;
+                SL.Msg = "通知[" + parsedTime + "]覆核人流程作業失敗，" + "錯誤訊息[" + ex.ToString() + "]";
+                log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+            }
+        }
+
+        public void emailNotify2RejectbyDate(string CloseStatus, string UId,
+                                            string CheckDate)
+        {
+            //初始化系統參數
+            Configer.Init();
+
+            //Log記錄用
+            SYSTEMLOG SL = new SYSTEMLOG();
+            SL.UId = UId;
+            SL.Controller = "Review";
+            SL.Action = "emailNotify2ReviewerbyDate";
+            SL.StartDateTime = DateTime.Now;
+
+            string MailServer = Configer.MailServer;
+            int MailServerPort = Configer.MailServerPort;
+            string MailSender = Configer.MailSender;
+            List<string> MailReceiver = Configer.MailReceiver;
+
+            DateTime parsed;
+            string parsedTime = "取得檢核件時間錯誤";
+            if (DateTime.TryParseExact(CheckDate, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed))
+            {
+                parsedTime = parsed.ToString("yyyy-MM-dd");
+            }
+
+            try
+            {
+                var query = context.REJECTPROFILES.Where(b => b.CloseStauts == CloseStatus).ToList();
+                if (query.Count() > 0)
+                {
+                    foreach (var item in query)
+                    {
+                        MAILTEMPLATE MT = context.MAILTEMPLATES.Find(item.MailTempID);
+
+                        if (MT != null)
+                        {
+                            MAILSERVER MS = context.MAILSERVERS.Find(MT.MailServerID);
+                            if (MS != null)
+                            {
+                                string TmpRole = item.NextReviews;
+                                string[] TmpRoles = TmpRole.Split(',');
+                                int[] Roles=new int[TmpRoles.Count()];
+                                if (TmpRoles.Count()>0)
+                                {
+                                    int i = 0;
+                                    foreach (var R in TmpRoles)
+                                    {
+                                        Roles[i]= int.Parse(R);
+                                        i++;
+                                    }
+
+                                    var queryUsers = context.EPSUSERS.Where(b => Roles.Contains(b.RId)).ToList();
+                                    if (queryUsers.Count() > 0)
+                                    {
+                                        StringBuilder UserNameb = new StringBuilder();
+                                        StringBuilder UserEmailb = new StringBuilder();
+                                        string UserName = "";
+                                        string UserEmail = "";
+                                        foreach (var U in queryUsers)
+                                        {
+                                            UserNameb.Append(U.UserName + Configer.SplitSymbol);
+                                            UserEmailb.Append(U.UserEmail + Configer.SplitSymbol);
+                                        }
+                                        UserName = StringProcessor.CutlastChar(UserNameb.ToString());
+                                        UserEmail = StringProcessor.CutlastChar(UserEmailb.ToString());
+                                        //組合通知信標頭
+                                        string MailSubject = MT.Subject.Replace("#Time", parsedTime)
+                                                  .Replace("#Action", CloseStatus);
+
+                                        //組合通知信內容
+                                        string MailBody = "";
+                                        string HtmlBody = "";
+                                        HtmlBody = "<table border=1 with='80%'>";
+                                        HtmlBody += "<tr><td>檢核編號</td>";
+                                        HtmlBody += "<td>表單名稱</td>";
+                                        HtmlBody += "<td>駁回原因</td></tr>";
+
+                                        var cps = context.CHECKPROCESSES.Where(b => b.CheckDate == CheckDate).ToList();
+
+                                        foreach (var cp in cps)
+                                        {
+                                            HtmlBody += "<tr>";
+                                            HtmlBody += "<td>" + cp.CheckSN + "</td>";
+                                            CHECKTITLE ct = context.CHECKTITLES.Find(cp.CheckID);
+                                            HtmlBody += "<td>" + ct.Definition + "</td>";
+                                            REJECTREASON rr = context.REJECTREASONS.Where(b => b.CheckSN == cp.CheckSN).OrderByDescending(b=>b.CreateTime).First();
+                                            HtmlBody += "<td>" + rr.Reason + "</td>";
+                                            MailBody += "</tr>";
+                                        }
+                                        HtmlBody += "</table>";
+                                        MailBody = MT.Body.Replace("#UserName", UserName)
+                                                    .Replace("#Body", HtmlBody)
+                                                    .Replace("#Link", "<a>機房表單系統連結</a>");
+
+                                        char[] s = { ',' };
+                                        List<string> Receivers = StringProcessor.SplitString2Array(UserEmail, s);
+
+                                        //寄信
+                                        string SendResult = SendEmail(MS.ServerIP, MS.ServerPort, MT.Sender, Receivers, MailSubject, MailBody);
+                                        if (SendResult == "success")
+                                        {
+                                            SL.EndDateTime = DateTime.Now;
+                                            SL.TotalCount = query.Count();
+                                            SL.SuccessCount = query.Count();
+                                            SL.FailCount = 0;
+                                            SL.Result = true;
+                                            SL.Msg = "通知[" + parsedTime + "]覆核人駁回流程作業成功";
+                                            log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+                                        }
+                                        else
+                                        {
+                                            //寄信失敗
+                                            SL.EndDateTime = DateTime.Now;
+                                            SL.TotalCount = 0;
+                                            SL.SuccessCount = 0;
+                                            SL.FailCount = 0;
+                                            SL.Result = true;
+                                            SL.Msg = "通知[" + parsedTime + "]覆核人駁回流程作業失敗，" + "錯誤訊息[" + SendResult + "]";
+                                            log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        //沒有角色
+                                        SL.EndDateTime = DateTime.Now;
+                                        SL.TotalCount = 0;
+                                        SL.SuccessCount = 0;
+                                        SL.FailCount = 0;
+                                        SL.Result = true;
+                                        SL.Msg = "通知[" + parsedTime + "]覆核人駁回流程作業失敗，沒有設定角色";
+                                        log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+                                    }
+                                }
+                                else
+                                {
+                                    //沒有角色
+                                    SL.EndDateTime = DateTime.Now;
+                                    SL.TotalCount = 0;
+                                    SL.SuccessCount = 0;
+                                    SL.FailCount = 0;
+                                    SL.Result = true;
+                                    SL.Msg = "通知[" + parsedTime + "]覆核人駁回流程作業失敗，沒有設定角色";
+                                    log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+                                }
+                            }
+                            else
+                            {
+                                //沒有設定MAILSERVER
+                                SL.EndDateTime = DateTime.Now;
+                                SL.TotalCount = 0;
+                                SL.SuccessCount = 0;
+                                SL.FailCount = 0;
+                                SL.Result = true;
+                                SL.Msg = "通知[" + parsedTime + "]覆核人駁回流程作業失敗，沒有設定MAILSERVER";
+                                log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+                            }
+                        }
+                        else
+                        {
+                            //沒有設定MAILTEMPLATE
+                            SL.EndDateTime = DateTime.Now;
+                            SL.TotalCount = 0;
+                            SL.SuccessCount = 0;
+                            SL.FailCount = 0;
+                            SL.Result = true;
+                            SL.Msg = "通知[" + parsedTime + "]覆核人流程作業失敗，沒有設定MAILTEMPLATE";
+                            log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+                        }
+                    }
+                }
+                else
+                {
+                    //沒有設定REVIEWPROFILE
+                    SL.EndDateTime = DateTime.Now;
+                    SL.TotalCount = 0;
+                    SL.SuccessCount = 0;
+                    SL.FailCount = 0;
+                    SL.Result = true;
+                    SL.Msg = "通知[" + parsedTime + "]覆核人流程作業失敗，沒有設定REVIEWPROFILE";
+                    log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                SL.EndDateTime = DateTime.Now;
+                SL.TotalCount = 0;
+                SL.SuccessCount = 0;
+                SL.FailCount = 0;
+                SL.Result = false;
+                SL.Msg = "通知[" + parsedTime + "]覆核人流程作業失敗，" + "錯誤訊息[" + ex.ToString() + "]";
+                log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+            }
+        }
     }
 }

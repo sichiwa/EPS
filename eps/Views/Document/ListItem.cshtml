@@ -1,0 +1,116 @@
+﻿@model IEnumerable<EPS.ViewModels.Document.vCHECKLIST>
+
+@{
+    ViewBag.Title = "ListItem";
+}
+
+<h2>@Html.Raw(TempData["Title"].ToString())</h2>
+
+<p>
+    @Html.ActionLink("新增檢核項目", "AddItem", new { CheckID = TempData["CheckID"], Title= TempData["Title"].ToString() })
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.CheckID)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ListName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Definition)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.StartTime)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EndTime)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ShiftName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ClassName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CheckType)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.AlwaysShow)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Charger)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ShowOrder)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CreateAccount)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CreateTime)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UpadteAccount)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UpdateTime)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.CheckID)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ListName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Definition)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.StartTime)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EndTime)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ShiftName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ClassName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CheckType)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.AlwaysShow)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Charger)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ShowOrder)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CreateAccount)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CreateTime)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UpadteAccount)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UpdateTime)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "EditItem", new { SN=item.SN }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.SN })
+        </td>
+    </tr>
+}
+
+</table>

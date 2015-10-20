@@ -108,7 +108,7 @@ namespace EPS.Controllers
                         //Session["UserID"] = "TAS191";
                         Session["UserRole"] = SF.getUserRole(model.UserID);
 
-                        return RedirectToAction("Index", "Account");
+                        return RedirectToAction("Index", "Process");
                     }
                     else
                     {
@@ -414,7 +414,7 @@ namespace EPS.Controllers
                     EPSUSER U =context.EPSUSERS.Find(VUM.UId);
                     U.UserPwd = VUM.UserPwd;
                     U.UserEmail = VUM.UserEmail;
-                    U.RId = U.RId;
+                    U.RId = VUM.RId;
                     U.UpadteAccount = Session["UserID"].ToString().Trim();
                     U.UpdateTime = DateTime.Now;
                     context.Entry(U).State= EntityState.Modified;

@@ -1,0 +1,192 @@
+﻿@model EPS.ViewModels.LOG.vSystemLog
+
+@{
+    ViewBag.Title = "Search";
+}
+
+<h2>系統紀錄查詢</h2>
+
+<div class="row">
+    <div class="col-md-12" id="showsearchdiv">
+        <label class="checkbox"> @Html.CheckBox("needSearch", new { id = "needSearchcbx" })查詢</label>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12" id="serachdiv">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "queryform" }))
+        {
+            <div class="row form-group">
+                @Html.Label("執行人", new { Class = "col-md-1 control-label" })
+                @Html.DropDownListFor(m => m.nowUser, (SelectList)Model.UserList, new { Class = "form-control", id = "UserList" })
+            </div>
+            <div class="row form-group">
+                @Html.Label("開始時間", new { Class = "col-md-1 control-label" })
+                @Html.TextBox("STime", "", new { Class = "form-control date-picker" })
+            </div>
+            <div class="row form-group">
+                @Html.Label("結束時間", new { Class = "col-md-1 control-label" })
+                @Html.TextBox("ETime", "", new { Class = "form-control date-picker" })
+            </div>
+            <div class="row form-group">
+                @Html.Label("執行結果", new { Class = "col-md-1 control-label" })
+                @Html.DropDownList("nowResult", (IEnumerable<SelectListItem>)Model.ResultList, new { Class = "form-control" })
+            </div>
+            <div class="row form-group">
+              @Html.HiddenFor(m=>m.PageIndex)
+                <input type="submit" class="col-md-offset-1 col-md-12 btn btn-primary" id="submitbtn" value="查詢" />
+            </div>
+        }
+    </div>
+</div>
+
+<table class="table table-bordered">
+    <tr>
+        <th>
+            @*@Html.DisplayFor(model => model.SYSTEMLOGList.FirstOrDefault().UId)*@
+            執行人
+        </th>
+        <th>
+            @*@Html.DisplayFor(model => model.SYSTEMLOGList.FirstOrDefault().Controller)*@
+            Controller
+        </th>
+        <th>
+            @*@Html.DisplayFor(model => model.SYSTEMLOGList.FirstOrDefault().Action)*@
+            Action
+        </th>
+        <th>
+            @*@Html.DisplayFor(model => model.SYSTEMLOGList.FirstOrDefault().StartDateTime)*@
+            開始時間
+        </th>
+        <th>
+            @*@Html.DisplayFor(model => model.SYSTEMLOGList.FirstOrDefault().EndDateTime)*@
+            結束時間
+        </th>
+        <th>
+            @*@Html.DisplayFor(model => model.SYSTEMLOGList.FirstOrDefault().TotalCount)*@
+            執行總筆數
+        </th>
+        <th>
+            @*@Html.DisplayFor(model => model.SYSTEMLOGList.FirstOrDefault().SuccessCount)*@
+            成功筆數
+        </th>
+        <th>
+            @*@Html.DisplayFor(model => model.SYSTEMLOGList.FirstOrDefault().FailCount)*@
+            失敗筆數
+        </th>
+        <th>
+            @*@Html.DisplayFor(model => model.SYSTEMLOGList.FirstOrDefault().Result)*@
+            執行結果
+        </th>
+        <th>
+            @*@Html.DisplayFor(model => model.SYSTEMLOGList.FirstOrDefault().Msg)*@
+            執行訊息
+        </th>
+    </tr>
+
+    @foreach (var item in Model.SYSTEMLOGList)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.UId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Controller)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Action)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartDateTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EndDateTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalCount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SuccessCount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FailCount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Result)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Msg)
+            </td>
+        </tr>
+    }
+
+</table>
+
+@Html.PagedListPager(Model.SYSTEMLOGList, Page => Url.Action("Search", new { Page }))
+
+@section LogSearchScript
+{
+    <script>
+        $(function () {
+
+            $('.pagination>li>a[href]').each(function (i, item) {
+                var page = $(item).attr('href').replace('/Log/Search?Page=', '');
+                $(item).attr('href', '#').click(function () { postPage(page); });
+
+            });
+
+            $("#UserList").prepend("<option value='-1' selected='true'>全部</option>");
+            $("#UserList").val("-1");
+
+            $("#serachdiv").hide();
+            $("#needSearchcbx").change(function () {
+                if ($("#needSearchcbx").prop("checked")) {
+                    $("#serachdiv").show();
+                }
+                else {
+                    $("#serachdiv").hide();
+                }
+            });
+
+            var today = new Date();
+            var daylastMonth = new Date(new Date(today).setMonth(today.getMonth() - 1));
+
+            $(".date-picker").datepicker({
+                changeMonth: true,
+                changYear: true,
+                dateFormat: "yy-mm-dd",
+                onSelect: function (startText, endText) {
+                    startText = $("#STime").val();
+                    endText = $("#ETime").val();
+
+                    if (startText > endText) {
+                        alert("起始日期不能大於結束日期");
+                    }
+                }
+            });
+
+            $("#STime").datepicker("setDate", daylastMonth)
+                       .on("change", function () {
+                           $("#STime").valid();
+                       });
+
+
+            $("#ETime").datepicker("setDate", new Date())
+                       .on("change", function () {
+                           $("#ETime").valid();
+                       });
+        });
+
+        function postPage(page) {
+            var targetFormId = '#queryform';
+            alert(page);
+            if ($(targetFormId).size() > 0) {
+                $('<input>')
+                 .attr({ type: 'hidden', id: 'PageIndex', name: 'PageIndex', value: page })
+                 .appendTo($(targetFormId));
+                $(targetFormId).submit();
+            }
+        };
+
+    </script>
+}
+

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - TWCA-機房電子表單系統</title>
     @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/jqueryuicss")
     @Scripts.Render("~/bundles/modernizr")
 
 </head>
@@ -41,8 +42,14 @@
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
-    @Scripts.Render("~/bundles/angular")
+    @Scripts.Render("~/bundles/jqueryui")
+    @*@Scripts.Render("~/bundles/angular")*@
     @RenderSection("scripts", required: false)
     @RenderSection("AddItemScript", required: false)
+    @RenderSection("EditItemScript", required: false)
+    @RenderSection("ProcessIndexScript", required: false)
+    @RenderSection("ReviewIndexScript",required:false)
+    @RenderSection("ReviewSummaryScript", required: false)
+    @RenderSection("LogSearchScript",required:false)
 </body>
 </html>

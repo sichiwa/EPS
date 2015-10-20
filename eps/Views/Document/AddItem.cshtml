@@ -1,148 +1,168 @@
 ﻿@model EPS.ViewModels.Document.vCHECKLIST_Manage
+
 @{
     ViewBag.Title = "AddItem";
 }
 
-<h2>@Html.Raw(TempData["Title"].ToString())</h2>
-<div ng-app="app">
-    @Html.Hidden("CheckID", TempData["CheckID"])
-    <div ng-controller="vCheckListController as ctrl">
-        <!-- main form -->
-        <form name="vCheckListsForm" ng-submit="ctrl.savevCheckLists()" novalidate>
-            <input type="button" value="新增" ng-click="ctrl.addvCheckList()" class="btn btn-default" />
-            <input type="submit" value="儲存" ng-disabled="vCheckListsForm.$invalid" class="btn btn-default" />
-            <br><br>
-            <!-- sub form - repeat order -->
-            <ng-form ng-repeat="vCheckList in ctrl.vCheckLists" name="subForm">
-                <!-- group box -->
-                <fieldset class="well the-fieldset">
-                    <legend class="the-legend">檢核項目</legend>
-                    <table class="table">
-                        <tr>
-                            <th>主題</th>
-                            <th>敘述</th>
-                            <th>開始時間</th>
-                            <th>結束時間</th>
-                            <th>班別</th>
-                            <th>類別</th>
-                            <th>類型</th>
-                            <th>持續顯示</th>
-                            <th>負責人</th>
-                            <th>顯示順序</th>
-                        </tr>
-                        <tr>
-                            <td>
-                                <input ng-model="vCheckList.ListName" required class="form-control">
-                            </td>
-                            <td>
-                                <input ng-model="vCheckList.Definition" required class="form-control">
-                            </td>
-                            <td>
-                                <input ng-model="vCheckList.StartTime" required class="form-control">
-                            </td>
-                            <td>
-                                <input ng-model="vCheckList.EndTime" required class="form-control">
-                            </td>
-                            <td>
-                                @Html.Hidden("ShiftID", "")
-                                <select ng-model="ShiftIDs" ng-options="m.id as m.ShiftName for m in vCheckList.ShiftIDList" id="ShiftIDs">
-                                    <option value="" selected="selected">-- 請選擇 --</option>
-                                </select>
-                            </td>
-                            <td>
-                                @Html.Hidden("ClassID", "")
-                                <select ng-model="ClassIDs" ng-options="m.id as m.ClassName for m in vCheckList.ClassIDList" id="ClassIDs">
-                                    <option value="" selected="selected">-- 請選擇 --</option>
-                                </select>
-                            </td>
-                            <td>
-                                <input ng-model="vCheckList.CheckType" required class="form-control">
-                            </td>
-                            <td>
-                                <input type="checkbox" ng-model="vCheckList.AlwaysShow" required class="form-control">
-                            </td>
-                            <td>
-                                @Html.Hidden("ChargerID", "")
-                                <select ng-model="ChargerIDs" ng-options="m.id as m.ChargerName for m in vCheckList.ChargerList" id="ChargerIDs">
-                                    <option value="" selected="selected">-- 請選擇 --</option>
-                                </select>
-                            </td>
-                            <td>
-                                <input ng-model="vCheckList.ShowOrder" required class="form-control" id="ShowOrder">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="11">
-                                <input type="button" value="移除"
-                                       ng-click="ctrl.removevCheckList($index)" class="btn btn-default" />
-                            </td>
-                        </tr>
-                    </table>
-                </fieldset>
-            </ng-form>
-        </form>
-        <br>
-    </div>
-</div>
-<!-- 定義共用的錯誤訊息(可抽出為獨立檔案) -->
-<script type="text/ng-template" id="commonMessage">
-    <span ng-message="required" class="text-danger field-validation-error">Required</span>
-</script>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
 
+    <div class="form-horizontal">
+        <h4>@Html.Raw(TempData["Title"].ToString())</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.CheckID, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.HiddenFor(model => model.CheckTitle)
+                @Html.EditorFor(model => model.CheckID, new { htmlAttributes = new { @class = "form-control", disabled = "disabled" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ListName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.ListName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.ListName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Definition, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Definition, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Definition, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.StartTime, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.StartTime, new { htmlAttributes = new { @class = "form-control",id= "StartTime" } })
+                @Html.ValidationMessageFor(model => model.StartTime, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.EndTime, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.EndTime, new { htmlAttributes = new { @class = "form-control" ,id= "EndTime" } })
+                @Html.ValidationMessageFor(model => model.EndTime, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        @*<div class="form-group">
+            @Html.LabelFor(model => model.ShiftID, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.ShiftID, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.ShiftID, "", new { @class = "text-danger" })
+            </div>
+        </div>*@
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ShiftIDList, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.ShiftID, (SelectList)Model.ShiftIDList, new { Class = "form-control", id = "ShiftID" })
+                @*@Html.EditorFor(model => model.ShiftIDList, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.ShiftIDList, "", new { @class = "text-danger" })*@
+            </div>
+        </div>
+
+        @*<div class="form-group">
+                @Html.LabelFor(model => model.ClassID, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.ClassID, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.ClassID, "", new { @class = "text-danger" })
+                </div>
+            </div>*@
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ClassIDList, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.ClassID, (SelectList)Model.ClassIDList, new { Class = "form-control", id = "ClassID" })
+                @*@Html.EditorFor(model => model.ClassIDList, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.ClassIDList, "", new { @class = "text-danger" })*@
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CheckType, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CheckType, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.CheckType, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.AlwaysShow, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.EditorFor(model => model.AlwaysShow)
+                    @Html.ValidationMessageFor(model => model.AlwaysShow, "", new { @class = "text-danger",id= "AlwaysShow" })
+                </div>
+            </div>
+        </div>
+
+        @*<div class="form-group">
+                @Html.LabelFor(model => model.ChargerID, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.ChargerID, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.ChargerID, "", new { @class = "text-danger" })
+                </div>
+            </div>*@
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ChargerList, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.ChargerID, (SelectList)Model.ChargerList, new { Class = "form-control", id = "UId" })
+                @*@Html.EditorFor(model => model.ChargerList, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.ChargerList, "", new { @class = "text-danger" })*@
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ShowOrder, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.ShowOrder, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.ShowOrder, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="建立" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("回文件清單", "Index")
+</div>
+
+@Html.Raw(TempData["CreateMsg"])
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-    @Scripts.Render("~/bundles/angularApp")
 }
 
-@section AddItemScript{
+@section AddItemScript
+{
     <script>
-        @*var model=@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(this.Model));
-        augular.module('app').value("viewModel",model);*@
-
         $(function () {
-            $("#ShiftIDs").change(function () {
-                var val = $("#ShiftIDs :selected").val();
-                var splits = val.split(":");
-                $("#ShiftID").val(splits[1]);
-                alert(splits[1]);
+            $("#AlwaysShow").click(function () {
+                var val = $("#AlwaysShow").prop("checked");
+                if (val) {
+                    $("#StartTime").val("00:00");
+                    $("#EndTime").val("24:00");
+                }
+                else {
+                    $("#StartTime").val("");
+                    $("#EndTime").val("");
+                }
             });
+        })
 
-            $("#ClassIDs").change(function () {
-                var val = $("#ClassIDs :selected").val();
-                var splits = val.split(":");
-                $("#ClassID").val(splits[1]);
-                alert(splits[1]);
-            });
-
-            $("#ChargerIDs").change(function () {
-                var val = $("#ChargerIDs :selected").val();
-                var splits = val.split(":");
-                $("#ChargerID").val(splits[1]);
-                alert(splits[1]);
-            });
-
-            @*$("#CheckID").change(function () {
-                var val = $("#CheckID :selected").val();
-                var splits = val.split(":");
-                $.ajax({
-                    url: "@Url.Content("~/Document/getShowOrder")",
-                    data: 'CheckID=' + splits[1],
-                    type: "Get",
-                    dataType: 'text',
-
-                    success: function (data) {
-                        $("#ShowOrder").val(data);
-                    },
-
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        alert(xhr.status);
-                        alert(thrownError);
-                    }
-                });
-            })*@
-        });
-
-    </script>
+    </script>    
 }
-

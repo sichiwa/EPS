@@ -16,14 +16,17 @@ namespace EPS.Models
         public int SN { get; set; }
         //[ForeignKey("CheckID")]
         [Required]
-        [Display(Name = "機房檢核項目ID")]
-        public int CheckID { get; set; }
-        [StringLength(6)]
-        [Display(Name = "最終覆核人")]
-        public string FinalReview { get; set; }
-        [StringLength(1000)]
-        [Display(Name = "敘述備註")]
-        public string Definition { get; set; }
+        [Column(TypeName = "nvarchar")]
+        [StringLength(10)]
+        [Display(Name = "日常檢核覆核狀態")]
+        public string CloseStauts { get; set; }
+        [Required]
+        [Display(Name = "下一位覆核角色ID")]
+        public int NextReview { get; set; }
+        [Required]
+        [StringLength(3)]
+        [Display(Name = "使用的郵件範本ID")]
+        public string MailTempID { get; set; }
         [Required]
         [StringLength(6)]
         [Display(Name = "建立者")]

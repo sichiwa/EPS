@@ -15,9 +15,13 @@ namespace EPS.Models
         [StringLength(10)]
         [Display(Name = "日常檢核件編號")]
         public string CheckSN { get; set; }
+        [Required]
+        [StringLength(8)]
+        [Display(Name = "檢核日期")]
+        public string CheckDate { get; set; }
         //[ForeignKey("CheckID")]
         [Required]
-        [Display(Name = "機房檢核項目ID")]
+        [Display(Name = "機房檢核文件ID")]
         public int CheckID { get; set; }
         [StringLength(1000)]
         [Display(Name = "日常檢核備註")]
@@ -40,6 +44,39 @@ namespace EPS.Models
         [StringLength(6)]
         [Display(Name = "最終覆核人")]
         public string FinalReview { get; set; }
+        [StringLength(6)]
+        [Display(Name = "早班")]
+        public string ShiftOne { get; set; }
+        [StringLength(4000)]
+        [Display(Name = "早班簽章值")]
+        public string ShiftOneSign { get; set; }
+        [StringLength(6)]
+        [Display(Name = "晚班")]
+        public string ShiftThree { get; set; }
+        [StringLength(4000)]
+        [Display(Name = "晚班簽章值")]
+        public string ShiftThreeSign { get; set; }
+        [StringLength(6)]
+        [Display(Name = "假日班")]
+        public string ShiftFour { get; set; }
+        [StringLength(4000)]
+        [Display(Name = "假日班簽章值")]
+        public string ShiftFourSign { get; set; }
+        [Display(Name = "領班")]
+        public string ShiftTop { get; set; }
+        [StringLength(4000)]
+        [Display(Name = "領班簽章值")]
+        public string ShiftTopSign { get; set; }
+        [Display(Name = "主管人員")]
+        public string ManageOne { get; set; }
+        [StringLength(4000)]
+        [Display(Name = "主管簽章值")]
+        public string ManageOneSign { get; set; }
+        [Display(Name = "系統部主管")]
+        public string ManageTop { get; set; }
+        [StringLength(4000)]
+        [Display(Name = "系統部主管簽章值")]
+        public string ManageTopSign { get; set; }
         [Required]
         [Column(TypeName = "varchar")]
         [StringLength(6)]

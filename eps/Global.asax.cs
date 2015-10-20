@@ -18,7 +18,7 @@ namespace EPS
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-            //Database.SetInitializer<EPSContext>(new EPSInitializer());
+            Database.SetInitializer<EPSContext>(new EPSInitializer());
         }
     }
 }

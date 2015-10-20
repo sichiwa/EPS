@@ -1,0 +1,125 @@
+﻿@model IEnumerable<EPS.ViewModels.REVIEW.vReview>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.CheckDate)
+        </th>
+        @*<th>
+            @Html.DisplayNameFor(model => model.CheckSN)
+        </th>*@
+        <th>
+            @Html.DisplayNameFor(model => model.Title)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CloseStutus)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td class="rp1">
+            @Html.DisplayFor(modelItem => item.CheckDate)
+        </td>
+        @*<td>
+            @Html.DisplayFor(modelItem => item.CheckSN)
+        </td>*@
+        <td>
+            @Html.DisplayFor(modelItem => item.Title)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CloseStutus)
+        </td>
+        <td class="rp2">
+            @Html.ActionLink("檢視", "Summary", new { CheckDate = item.CheckDate }) 
+        </td>
+    </tr>
+}
+
+</table>
+
+@section ReviewIndexScript
+{
+    <script>
+
+    jQuery.fn.rowspan2 = function(){
+	var i=0;
+	var pText='';
+	var sObj;	//預計進行RowSpan物件
+	var rcnt=0;	//計算rowspan的數字
+	var tlen=this.length;
+	return this.each(function(){
+		i=i+1;
+		rcnt=rcnt+1;
+		//與前項不同
+		if(pText!=$(this).children("a").attr("href"))
+		{
+			if(i!=1)
+			{
+				//不是剛開始，進行rowspan
+				sObj.attr('rowspan',rcnt-1);
+				rcnt=1;
+			}
+			//設定要rowspan的物件
+			sObj=$(this);
+			pText = $(this).children("a").attr("href");
+			//alert(pText);
+		}
+		else
+		{
+			$(this).hide();
+		}
+
+		if(i==tlen)
+		{
+			sObj.attr('rowspan',rcnt+1);
+		}
+	});
+}
+    
+    jQuery.fn.rowspan1 = function () {
+        var i = 0;
+        var pText = '';
+        var sObj;	//預計進行RowSpan物件
+        var rcnt = 0;	//計算rowspan的數字
+        var tlen = this.length;
+        return this.each(function () {
+            i = i + 1;
+            rcnt = rcnt + 1;
+            //與前項不同
+            if (pText != $(this).text()) {
+                if (i != 1) {
+                    //不是剛開始，進行rowspan
+                    sObj.attr('rowspan', rcnt - 1);
+                    rcnt = 1;
+                }
+                //設定要rowspan的物件
+                sObj = $(this);
+                pText = $(this).text();
+                //alert(pText);
+            }
+            else {
+                $(this).hide();
+            }
+
+            if (i == tlen) {
+                sObj.attr('rowspan', rcnt + 1);
+            }
+        });
+    }
+
+    $(function () {
+        $(".rp1").rowspan1();
+        $(".rp2").rowspan2();
+    });
+
+</script>    
+}
+

@@ -34,7 +34,6 @@
                 @Html.LabelFor(m => Model.UserID, new { @class = "control-label col-md-1 col-md-offset-4" })
                 @Html.TextBoxFor(m => Model.UserID, new { @class = "form-control", @name = "UserName", @placeholder = "請輸入帳號" })
                 @Html.ValidationMessageFor(m => Model.UserID, "", new { @class = "text-danger" })
-
             </div>
             <div class="row form-group">
                 @Html.LabelFor(m => Model.Pwd, new { @class = "control-label col-md-1 col-md-offset-4" })
@@ -46,7 +45,7 @@
             </div>
         }
     </div>
-    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/jquery-2.1.4.min.js"></script>
     <script src="~/Scripts/bootstrap.min.js"></script>
     <script src="~/Scripts/respond.min.js"></script>
     <script src="~/Scripts/jquery.validate.min.js"></script>
