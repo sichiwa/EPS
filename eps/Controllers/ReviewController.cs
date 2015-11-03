@@ -112,7 +112,7 @@ namespace EPS.Controllers
             SYSTEMLOG SL = new SYSTEMLOG();
             SL.UId = Session["UserID"].ToString();
             SL.Controller = "Review";
-            SL.Action = "Deatil";
+            SL.Action = "Summary";
             SL.StartDateTime = DateTime.Now;
 
             string MailServer = Configer.MailServer;
@@ -122,7 +122,25 @@ namespace EPS.Controllers
 
             try
             {
+                vReviewSummary vRS = new vReviewSummary();
+                vRS.CheckDate = CheckDate;
+                string CheckSN = CheckDate + "01";
+                vRS.EventItem = context.CHECKPROCESSDETAILS.Where(b => b.CheckSN == CheckSN).Where(b => b.ListID == 1).First().CheckResult;
+                vRS.HandoverItem = context.CHECKPROCESSDETAILS.Where(b => b.CheckSN == CheckSN).Where(b => b.ListID == 2).First().CheckResult;
+                var query01 = context.CHECKPROCESSES.Where(b => b.CheckDate == CheckDate).Where(b => b.CheckID == 1);
+                if (query01.Count()>0)
+                {
+                    vRS.ShiftOne = query01.First().ShiftOne;
+                    vRS.ShiftThree = query01.First().ShiftThree;
+                    vRS.ShiftFour = query01.First().ShiftFour;
+                    vRS.ShiftTop = query01.First().ShiftTop;
+                    vRS.ManageOne = query01.First().ManageOne;
+                    vRS.ManageTop = query01.First().ManageTop;
+                }
+
+
                 var query = context.REVIEWDATAS.Where(b => b.CheckDate == CheckDate);
+                    //.Where(b=>b.ListName!= "事件描述及行動").Where(b=>b.ListName != "交接事項");
                 if (query.Count() > 0)
                 {
                     SL.EndDateTime = DateTime.Now;
@@ -141,8 +159,8 @@ namespace EPS.Controllers
                     }
 
                     TempData["TitleText"] = parsedTime + " 檢核資料";
-
-                    return View(query.ToList());
+                    vRS.RD = query.ToList();
+                    return View(vRS);
                 }
                 else
                 {
@@ -231,6 +249,13 @@ namespace EPS.Controllers
             }
         }
 
+        /// <summary>
+        /// 簽核
+        /// </summary>
+        /// <param name="CheckSNs"></param>
+        /// <param name="CheckDates"></param>
+        /// <param name="SignedData"></param>
+        /// <returns></returns>
         public string Confirm(List<string> CheckSNs, List<string> CheckDates, string SignedData)
         {
             //初始化系統參數
@@ -364,6 +389,13 @@ namespace EPS.Controllers
             }
         }
 
+        /// <summary>
+        /// 駁回
+        /// </summary>
+        /// <param name="CheckSNs"></param>
+        /// <param name="CheckDates"></param>
+        /// <param name="Reason"></param>
+        /// <returns></returns>
         public string Reject(List<string> CheckSNs, List<string> CheckDates,string Reason)
         {
             //初始化系統參數

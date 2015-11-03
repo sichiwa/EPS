@@ -266,6 +266,7 @@
     <Compile Include="ViewModels\PROCESS\vCHECKs.cs" />
     <Compile Include="ViewModels\REVIEW\vReview.cs" />
     <Compile Include="ViewModels\LOG\vSystemLog.cs" />
+    <Compile Include="ViewModels\REVIEW\vReviewSummary.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
@@ -422,9 +423,9 @@
     <Content Include="Views\Document\EditItem.cshtml" />
     <Content Include="Views\Process\Index.cshtml" />
     <Content Include="Views\Review\Index.cshtml" />
-    <Content Include="Views\Review\Summary.cshtml" />
     <Content Include="Views\Review\Detail.cshtml" />
     <Content Include="Views\Log\Search.cshtml" />
+    <Content Include="Views\Review\Summary.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

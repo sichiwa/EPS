@@ -137,7 +137,7 @@ namespace EPS.Controllers
 
                         vCs.ShiftIDList = new SelectList(query1, "ShiftID", "ShiftValue");
                         //取得昨日交接事項
-                        vCs.HandoverItem = GetHandOverItem(-1);
+                        vCs.HandoverItem = GetHandOverItem(CheckDate, -1);
                         return vCs;
                     }
                     else
@@ -171,7 +171,7 @@ namespace EPS.Controllers
 
                         vCs.ShiftIDList = new SelectList(query1, "ShiftID", "ShiftValue");
                         //取得昨日交接事項
-                        vCs.HandoverItem = GetHandOverItem(-1);
+                        vCs.HandoverItem = GetHandOverItem(CheckDate,-1);
                         return vCs;
                     }
                     else
@@ -526,9 +526,9 @@ namespace EPS.Controllers
                         RD.CheckDate = CheckDate;
                         RD.CheckSN = q.CheckSN;
                         RD.ListName = item.ListName;
-                        RD.ShiftOneChecked = false;
-                        RD.ShiftTrheeChecked = false;
-                        RD.ShiftFourChecked = false;
+                        RD.ShiftOneChecked = "N/A";
+                        RD.ShiftTrheeChecked = "N/A"; 
+                        RD.ShiftFourChecked = "N/A";
                         RD.CreateAccount = "System";
                         RD.CreateTime = DateTime.Now;
                         RD.UpadteAccount = "System";
@@ -564,12 +564,17 @@ namespace EPS.Controllers
         /// </summary>
         /// <param name="d">要取得幾天前的</param>
         /// <returns></returns>
-        private string GetHandOverItem(double d)
+        private string GetHandOverItem(string CheckDate,double d)
         {
             string Result = string.Empty;
 
+            DateTime aa = DateTime.ParseExact(CheckDate,
+                                        "yyyyMMdd",
+                                        CultureInfo.InvariantCulture,
+                                        DateTimeStyles.None);
+
             //取得昨日交接事項
-            string LastCheckSN = DateTime.Now.AddDays(d).ToString("yyyyMMdd") + "01";
+            string LastCheckSN = aa.AddDays(d).ToString("yyyyMMdd") + "01";
             var query = context.CHECKPROCESSDETAILS
                                                                                     .Where(b => b.CheckID == 1)
                                                                                     .Where(b => b.ListID == 2)
@@ -778,56 +783,78 @@ namespace EPS.Controllers
                         CheckTitle = CT.Title;
                     }
 
-                    //更新覆核表單
-                    var query = context.REVIEWDATAS.Where(b => b.CheckDate == CheckDate);
-                    if (query.Count() > 0)
-                    {
-                        foreach (var q in query.ToList())
+                        //更新覆核表單
+                        var query = context.REVIEWDATAS.Where(b => b.CheckDate == CheckDate);
+                        if (query.Count() > 0)
                         {
-                            if (q.ListName == "事件描述及行動" || q.ListName== "交接事項")
+                            foreach (var q in query.ToList())
                             {
-                                if (Shift == "01")
-                                {
-                                    q.ShiftOneChecked = true;
-                                }
-                                else if (Shift == "03")
-                                {
-                                    q.ShiftTrheeChecked = true;
-                                }
-                                else if (Shift == "04")
-                                {
-                                    q.ShiftFourChecked = true;
-                                }
-                            }
-                            else
-                            {
-                                var query01 = context.CHECKLISTS.Where(b => b.ShiftID == Shift)
-                                                            .Where(b => b.ListName == q.ListName);
-
-                                if (query01.Count() > 0)
+                                if (q.ListName == "事件描述及行動" || q.ListName == "交接事項")
                                 {
                                     if (Shift == "01")
                                     {
-                                        q.ShiftOneChecked = true;
+                                        q.ShiftOneChecked = "";
                                     }
                                     else if (Shift == "03")
                                     {
-                                        q.ShiftTrheeChecked = true;
+                                        q.ShiftTrheeChecked = "";
                                     }
                                     else if (Shift == "04")
                                     {
-                                        q.ShiftFourChecked = true;
+                                        q.ShiftFourChecked = "";
                                     }
                                 }
+                                else
+                                {
+                                    var query01 = context.CHECKLISTS.Where(b => b.ShiftID == Shift)
+                                                                .Where(b => b.ListName == q.ListName);
+
+                                    if (query01.Count() > 0)
+                                    {
+                                        if (Shift == "01")
+                                        {
+                                            if (getCheckReuslt(CheckDate, Shift, q.ListName))
+                                            {
+                                                q.ShiftOneChecked = "正常";
+                                            }
+                                            else
+                                            {
+                                                q.ShiftOneChecked = "異常";
+                                            }
+                                         
+                                        }
+                                        else if (Shift == "03")
+                                        {
+                                            if (getCheckReuslt(CheckDate, Shift, q.ListName))
+                                            {
+                                                q.ShiftTrheeChecked = "正常";
+                                            }
+                                            else
+                                            {
+                                                q.ShiftTrheeChecked = "異常";
+                                            }
+                                        }
+                                        else if (Shift == "04")
+                                        {
+                                            if (getCheckReuslt(CheckDate, Shift, q.ListName))
+                                            {
+                                                q.ShiftFourChecked = "正常";
+                                            }
+                                            else
+                                            {
+                                                q.ShiftFourChecked = "異常";
+                                            }
+                                        }
+                                    }
+                                }
+
+                                q.UpadteAccount = Session["UserID"].ToString().Trim();
+                                q.UpdateTime = DateTime.Now;
+                                context.Entry(q).State = EntityState.Modified;
+                                context.SaveChanges();
                             }
 
-                            q.UpadteAccount = Session["UserID"].ToString().Trim();
-                            q.UpdateTime = DateTime.Now;
-                            context.Entry(q).State = EntityState.Modified;
-                            context.SaveChanges();
-                        }
-
-                        if (Shift == "03" || Shift == "04")
+                         if (Shift == "03" || Shift == "04")
                         {
                             bool CanNotify = true;
                             var queryCP = context.CHECKPROCESSES.Where(b=>b.CheckDate==CheckDate);
@@ -888,6 +915,25 @@ namespace EPS.Controllers
 
                 return "確認失敗";
             }
+        }
+
+        private Boolean  getCheckReuslt(string CheckDate,string ShitfID, string ListName)
+        {
+            Boolean Reuslt = true;
+
+            var query = context.CHECKLISTS.Where(b => b.ListName == ListName);
+            foreach (var item in query.ToList())
+            {
+                var  aa = context.CHECKPROCESSDETAILS.Where(b => b.ShiftID == ShitfID).Where(b => b.CheckDate == CheckDate).Where(b => b.ListID == item.ListID).Where(b => b.CheckResult == "false");
+
+                if (aa.Count() > 0)
+                {
+                    Reuslt = false;
+                    break;
+                }
+            }
+
+            return Reuslt;
         }
 
         //private string getCheckResult(int CheckID,string NowCheckResult ,string OldCheckResult,string UserName)

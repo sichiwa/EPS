@@ -1,269 +1,330 @@
-﻿@model IEnumerable<EPS.Models.REVIEWDATA>
+﻿@model EPS.ViewModels.REVIEW.vReviewSummary
 
 @{
     ViewBag.Title = "Summary";
 }
+<hr />
 
-<h2>@TempData["TitleText"]</h2>
-
-<p>
-
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.CheckSN)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ListName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ShiftOneChecked)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ShiftTrheeChecked)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ShiftFourChecked)
-        </th>
-    </tr>
-
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td class="rp1">
-                <font color="blue" style="text-decoration:underline;">@Html.DisplayFor(modelItem => item.CheckSN)</font>
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ListName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ShiftOneChecked)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ShiftTrheeChecked)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ShiftFourChecked)
-            </td>
-        </tr>
-    }
-
-</table>
-<br />
-<div id="Confirmdiv">
-    <div class="row">
-        <label class="radio-inline">
-            <input type="radio" id="HwSignrbtn" checked class="Signrbtn" />卡片簽章
-        </label>
-        <label class="radio-inline">
-            <input type="radio" id="SwSignrbtn" class="Signrbtn" />軟體簽章
-        </label>
-    </div>
-    <br />
-    <div class="row form-inline" id="Pwddiv">
-        @Html.Label("憑證密碼", new { @Class = "Control-label" })
-        <input type="password" id="CertPwd" class="form-control" placeholder="請輸入憑證密碼" />
-    </div>
-    <br />
-    <div class="row">
-        <input type="hidden" id="Confirmhid" />
-        <input type="submit" id="Confirmbtn" class="btn btn-primary" value="確認檢核完成" />
-        <input type="submit" id="Rejectbtn" class="btn btn-danger" value="駁回" />
-    </div>
+<div class="row">
+    <div class="col-sm-2  "><label class="lead">事件描述及行動</label>  </div>
+    <div class="col-sm-10 "><p class="lead">@Model.EventItem</p></div>
 </div>
+<div class="row">
+    <div class="col-sm-2  lead"><label class="lead">交接事項</label> </div>
+    <div class="col-sm-10  "><p class="lead" >@Model.HandoverItem</p></div>
+</div>
+<hr />
+    <div class="row">
+        <table class="table table-bordered">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.RD.First().CheckSN)
+                </th>
+                <th >
+                    @Html.DisplayNameFor(model => model.RD.First().ListName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.RD.First().ShiftOneChecked)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.RD.First().ShiftTrheeChecked)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.RD.First().ShiftFourChecked)
+                </th>
+            </tr>
 
-@Scripts.Render("~/bundles/SignData")
-@section ReviewSummaryScript
+            @foreach (var item in Model.RD)
+            {
+                <tr>
+                    <td class="rp1">
+                        <font color="blue" style="text-decoration:underline;">@Html.DisplayFor(modelItem => item.CheckSN)</font>
+                    </td>
+                    <td class="ListName">
+                        @Html.DisplayFor(modelItem => item.ListName)
+                    </td>
+                    <td>
+                        @if (item.ShiftOneChecked == "正常")
+                {
+                            <label class="text-success">正常</label>
+                        }
+                        else if (item.ShiftOneChecked == "異常")
+                        {
+                            <label class="text-danger">異常</label>
+                        }
+                        else
+                        {
+                            <label class="text-info">N/A</label>
+                        }
+                    </td>
+                    <td>
+                        @if (item.ShiftOneChecked == "正常")
+                {
+                            <label class="text-success">正常</label>
+                        }
+                        else if (item.ShiftTrheeChecked == "異常")
+                        {
+                            <label class="text-danger">異常</label>
+                        }
+                        else
+                        {
+                            <label class="text-info">N/A</label>
+                        }
+                    </td>
+                    <td>
+                        @if (item.ShiftFourChecked == "正常")
+                {
+                            <label class="text-success">正常</label>
+                        }
+                        else if (item.ShiftFourChecked == "異常")
+                        {
+                            <label class="text-danger">異常</label>
+                        }
+                        else
+                        {
+                            <label class="text-info">N/A</label>
+                        }
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+<hr />
+    <div class="row">
+        <label class="control-label col-sm-2">早班: @Model.ShiftOne</label>
+        <label class="control-label col-sm-2">晚班: @Model.ShiftThree</label>
+        <label class="control-label col-sm-2">假日班: @Model.ShiftFour</label>
+        <label class="control-label col-sm-2">機房領班: @Model.ShiftTop</label>
+        <label class="control-label col-sm-2">機房主管: @Model.ManageOne</label>
+        <label class="control-label col-sm-2">系統部主管: @Model.ManageTop</label>
+    </div>
+  <hr />
+    <div id="Confirmdiv">
+        <div class="row">
+            <label class="radio-inline">
+                <input type="radio" id="HwSignrbtn" checked class="Signrbtn" />卡片簽章
+            </label>
+            <label class="radio-inline">
+                <input type="radio" id="SwSignrbtn" class="Signrbtn" />軟體簽章
+            </label>
+        </div>
+        <br />
+        <div class="row form-inline" id="Pwddiv">
+            @Html.Label("憑證密碼", new { @Class = "Control-label" })
+            <input type="password" id="CertPwd" class="form-control" placeholder="請輸入憑證密碼" />
+        </div>
+        <br />
+        <div class="row">
+            <input type="hidden" id="Confirmhid" />
+            <input type="submit" id="Confirmbtn" class="btn btn-primary" value="確認檢核完成" />
+            <input type="submit" id="Rejectbtn" class="btn btn-danger" value="駁回" />
+        </div>
+    </div>
+
+    @Scripts.Render("~/bundles/SignData")
+    @section ReviewSummaryScript
 {
-    <script>
-        jQuery.fn.rowspan1 = function () {
-            var i = 0;
-            var pText = '';
-            var sObj;	//預計進行RowSpan物件
-            var rcnt = 0;	//計算rowspan的數字
-            var tlen = this.length;
-            return this.each(function () {
-                i = i + 1;
-                rcnt = rcnt + 1;
-                //與前項不同
-                if (pText != $(this).text()) {
-                    if (i != 1) {
-                        //不是剛開始，進行rowspan
-                        sObj.attr('rowspan', rcnt - 1);
-                        rcnt = 1;
-                    }
-                    //設定要rowspan的物件
-                    sObj = $(this);
-                    pText = $(this).text();
-                    //alert(pText);
-                }
-                else {
-                    $(this).hide();
-                }
-
-                if (i == tlen) {
-                    sObj.attr('rowspan', rcnt + 1);
-                }
-            });
-        }
-
-        $(function () {
-            $(".rp1").rowspan1();
-
-            $(".rp1").click(function () {
-                var CheckSN = $(this).text().trim();
-                var CheckDate = CheckSN.substring(0, 8);
-                //alert("CheckSN:" + CheckSN);
-                window.open("/Review/Detail?CheckSN=" + CheckSN + "&CheckDate=" + CheckDate, "明細");
-            });
-
-            //確認檢核完畢
-            $("#Confirmbtn").click(function () {
-                if (confirm("確認皆已檢核完畢!?")) {
-                    var CheckSNs = [];
-                    var CheckDates = [];
-                    $(".rp1:visible").each(function () {
-                        var CheckSN = $(this).text().trim();
-                        var CheckDate = CheckSN.substring(0, 8);
-                        CheckSNs.push(CheckSN);
-                        CheckDates.push(CheckDate);
-                    });
-                    //var CheckSN = $("#Confirmhid").val();
-                    //alert("CheckSN:" + CheckSN);
-                    //var CheckID = $("#tabs").tabs('option', 'active');
-                    //var TmpCheckDate = $(".date-picker").val();
-                    //var CheckDate = "";
-                    //var ShiftID = $("#ShiftID").val();
-                    var UseHwSign = $("#HwSignrbtn").prop("checked");
-                    //var TmpArr = TmpCheckDate.split("-");
-
-                    //for (var i = 0; i < TmpArr.length; i++) {
-                    //    CheckDate += TmpArr[i];
-                    //}
-                    var now = new Date();
-                    //組時間yyyy/MM/dd hh:mm:ss
-                    var now1 = now.getFullYear() + '/' + (now.getMonth() + 1) + '/' + now.getDate() + ' ' + now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
-                    var CanConfirm = true;
-
-                    ////檢查文件是否有項目漏填，如果有就不能執行確認作業
-                    //$("#" + CheckSN + " .autocheck").each(function () {
-                    //    var inputtype = $(this).prop("type");
-                    //    var v;
-                    //    if (inputtype == "textarea" || inputtype == "textbox") {
-                    //        v = $(this).val();
-                    //    }
-                    //    else if (inputtype=="checkbox") {
-                    //        v = $(this).prop("checked");
-                    //    }
-
-                    //    if (v=="" || v==false) {
-                    //        CanConfirm = false;
-                    //    }
-                    //});
-
-                    //都有輸入才能確認
-                    if (CanConfirm) {
-                        var BeSignedData = getBeSingedData(CheckSNs.toString(), CheckDates.toString(), UseHwSign, now1);
-                        var SignedData = "";
-
-                        if (UseHwSign == true) {
-                            //硬體憑證簽章
-                            SignedData = SignData(BeSignedData);
+        <script>
+            jQuery.fn.rowspan1 = function () {
+                var i = 0;
+                var pText = '';
+                var sObj;	//預計進行RowSpan物件
+                var rcnt = 0;	//計算rowspan的數字
+                var tlen = this.length;
+                return this.each(function () {
+                    i = i + 1;
+                    rcnt = rcnt + 1;
+                    //與前項不同
+                    if (pText != $(this).text()) {
+                        if (i != 1) {
+                            //不是剛開始，進行rowspan
+                            sObj.attr('rowspan', rcnt - 1);
+                            rcnt = 1;
                         }
-                        else {
-                            //軟體憑證簽章
-                        }
-
-                        //alert("TmpArr:" + TmpArr);
-                        //alert("CheckSN:" + CheckSN);
-                        //alert("CheckID:" + CheckID);
-                        //alert("CheckDate:" + CheckDate);
-                        //alert("Shift:" + ShiftID);
-                        //alert("UseHwSign:" + UseHwSign);
-                        //alert("BeSignedData:" + BeSignedData);
-                        //alert("SignedData:" + SignedData);
-
-                        $.ajax({
-                            url: "@Url.Content("~/Review/Confirm")",
-                            type: "POST",
-                            contextType: "text/html; charset=utf-8",
-                            data: {
-                                CheckSNs: CheckSNs,
-                                CheckDates: CheckDates,
-                                SignedData: SignedData
-                            },
-                            success: function (data) {
-                                alert(data);
-                            },
-                            error: function (data) {
-                                alert(data);
-                            }
-                        });
+                        //設定要rowspan的物件
+                        sObj = $(this);
+                        pText = $(this).text();
+                        //alert(pText);
                     }
                     else {
-                        alert("您尚有項目未檢核完成!!");
+                        $(this).hide();
                     }
-                }
-            });
 
-            $("#Rejectbtn").click(function () {
-                var Reason = prompt("請輸入駁回理由", "輸入訊息");
-                if (Reason != null) {
-                    if (Reason != "") {
-                        //alert(Ression);
+                    if (i == tlen) {
+                        sObj.attr('rowspan', rcnt + 1);
+                    }
+                });
+            }
+
+            $(function () {
+                $(".rp1").rowspan1();
+                
+                $(".ListName").each(function () {
+                    var a = $(this).text().trim();
+                    //alert(a);
+                    if (a == "事件描述及行動" || a == "交接事項") {
+                        alert(a);
+                        $(this).parent().hide();
+                    }
+
+                });
+
+         
+               // alert(a);
+
+                $(".rp1").click(function () {
+                    var CheckSN = $(this).text().trim();
+                    var CheckDate = CheckSN.substring(0, 8);
+                    //alert("CheckSN:" + CheckSN);
+                    window.open("/Review/Detail?CheckSN=" + CheckSN + "&CheckDate=" + CheckDate, "明細");
+                });
+
+                //確認檢核完畢
+                $("#Confirmbtn").click(function () {
+                    if (confirm("確認皆已檢核完畢!?")) {
                         var CheckSNs = [];
                         var CheckDates = [];
-                        $(".rp1:visible").each(function () {
+                        $(".rp1").each(function () {
                             var CheckSN = $(this).text().trim();
                             var CheckDate = CheckSN.substring(0, 8);
                             CheckSNs.push(CheckSN);
                             CheckDates.push(CheckDate);
-
                         });
+                        //var CheckSN = $("#Confirmhid").val();
+                        //alert("CheckSN:" + CheckSN);
+                        //var CheckID = $("#tabs").tabs('option', 'active');
+                        //var TmpCheckDate = $(".date-picker").val();
+                        //var CheckDate = "";
+                        //var ShiftID = $("#ShiftID").val();
+                        var UseHwSign = $("#HwSignrbtn").prop("checked");
+                        //var TmpArr = TmpCheckDate.split("-");
 
-                        $.ajax({
-                            url: "@Url.Content("~/Review/Reject")",
-                            type: "POST",
-                            contextType: "text/html; charset=utf-8",
-                            data: {
-                                CheckSNs: CheckSNs,
-                                CheckDates: CheckDates,
-                                Reason: Reason
-                            },
-                            success: function (data) {
-                                alert(data);
-                            },
-                            error: function (data) {
-                                alert(data);
+                        //for (var i = 0; i < TmpArr.length; i++) {
+                        //    CheckDate += TmpArr[i];
+                        //}
+                        var now = new Date();
+                        //組時間yyyy/MM/dd hh:mm:ss
+                        var now1 = now.getFullYear() + '/' + (now.getMonth() + 1) + '/' + now.getDate() + ' ' + now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
+                        var CanConfirm = true;
+
+                        ////檢查文件是否有項目漏填，如果有就不能執行確認作業
+                        //$("#" + CheckSN + " .autocheck").each(function () {
+                        //    var inputtype = $(this).prop("type");
+                        //    var v;
+                        //    if (inputtype == "textarea" || inputtype == "textbox") {
+                        //        v = $(this).val();
+                        //    }
+                        //    else if (inputtype=="checkbox") {
+                        //        v = $(this).prop("checked");
+                        //    }
+
+                        //    if (v=="" || v==false) {
+                        //        CanConfirm = false;
+                        //    }
+                        //});
+
+                        //都有輸入才能確認
+                        if (CanConfirm) {
+                            var BeSignedData = getBeSingedData(CheckSNs.toString(), CheckDates.toString(), UseHwSign, now1);
+                            var SignedData = "";
+
+                            if (UseHwSign == true) {
+                                //硬體憑證簽章
+                                SignedData = SignData(BeSignedData);
                             }
-                        });
+                            else {
+                                //軟體憑證簽章
+                            }
+
+                            //alert("TmpArr:" + TmpArr);
+                            //alert("CheckSN:" + CheckSN);
+                            //alert("CheckID:" + CheckID);
+                            //alert("CheckDate:" + CheckDate);
+                            //alert("Shift:" + ShiftID);
+                            //alert("UseHwSign:" + UseHwSign);
+                            //alert("BeSignedData:" + BeSignedData);
+                            //alert("SignedData:" + SignedData);
+
+                            $.ajax({
+                                url: "@Url.Content("~/Review/Confirm")",
+                                type: "POST",
+                                contextType: "text/html; charset=utf-8",
+                                data: {
+                                    CheckSNs: CheckSNs,
+                                    CheckDates: CheckDates,
+                                    SignedData: SignedData
+                                },
+                                success: function (data) {
+                                    alert(data);
+                                },
+                                error: function (data) {
+                                    alert(data);
+                                }
+                            });
+                        }
+                        else {
+                            alert("您尚有項目未檢核完成!!");
+                        }
+                    }
+                });
+
+                $("#Rejectbtn").click(function () {
+                    var Reason = prompt("請輸入駁回理由", "輸入訊息");
+                    if (Reason != null) {
+                        if (Reason != "") {
+                            //alert(Ression);
+                            var CheckSNs = [];
+                            var CheckDates = [];
+                            $(".rp1:visible").each(function () {
+                                var CheckSN = $(this).text().trim();
+                                var CheckDate = CheckSN.substring(0, 8);
+                                CheckSNs.push(CheckSN);
+                                CheckDates.push(CheckDate);
+
+                            });
+
+                            $.ajax({
+                                url: "@Url.Content("~/Review/Reject")",
+                                type: "POST",
+                                contextType: "text/html; charset=utf-8",
+                                data: {
+                                    CheckSNs: CheckSNs,
+                                    CheckDates: CheckDates,
+                                    Reason: Reason
+                                },
+                                success: function (data) {
+                                    alert(data);
+                                },
+                                error: function (data) {
+                                    alert(data);
+                                }
+                            });
+                        }
+                        else {
+                            alert("請輸入駁回理由");
+                        }
+                    }
+
+                });
+
+                $(".Signrbtn").change(function () {
+                    //var HwSign = $("#HwSignrbtn").prop("checked");
+                    if (this.id == "HwSignrbtn") {
+                        $("#SwSignrbtn").prop("checked", false);
+                        $("#Pwddiv").show();
                     }
                     else {
-                        alert("請輸入駁回理由");
+                        $("#HwSignrbtn").prop("checked", false);
+                        $("#Pwddiv").hide();
                     }
-                }
-
+                });
             });
 
-            $(".Signrbtn").change(function () {
-                //var HwSign = $("#HwSignrbtn").prop("checked");
-                if (this.id == "HwSignrbtn") {
-                    $("#SwSignrbtn").prop("checked", false);
-                    $("#Pwddiv").show();
-                }
-                else {
-                    $("#HwSignrbtn").prop("checked", false);
-                    $("#Pwddiv").hide();
-                }
-            });
-        });
+            //組合簽章本文
+            function getBeSingedData(CheckSN, CheckDate, UseHwSign, now) {
+                var Symbol = "|";
+                return CheckSN + Symbol + CheckDate + Symbol + UseHwSign + Symbol + now
+            }
+        </script>
+    }
 
-        //組合簽章本文
-        function getBeSingedData(CheckSN, CheckDate, UseHwSign, now) {
-            var Symbol = "|";
-            return CheckSN + Symbol + CheckDate + Symbol + UseHwSign + Symbol + now
-        }
-    </script>
-
-}

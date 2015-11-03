@@ -26,14 +26,14 @@ namespace EPS.Models
         [Display(Name = "機房檢核主題名稱")]
         public string ListName { get; set; }
         [Display(Name = "早班確認")]
-        //[StringLength(200)]
-        public bool ShiftOneChecked { get; set; }
+        [StringLength(10)]
+        public string ShiftOneChecked { get; set; }
         [Display(Name = "晚班確認")]
-        //[StringLength(200)]
-        public bool ShiftTrheeChecked { get; set; }
+        [StringLength(10)]
+        public string ShiftTrheeChecked { get; set; }
         [Display(Name = "假日班確認")]
-        //[StringLength(200)]
-        public bool ShiftFourChecked { get; set; }
+        [StringLength(10)]
+        public string ShiftFourChecked { get; set; }
         [Required]
         [Column(TypeName = "varchar")]
         [StringLength(6)]

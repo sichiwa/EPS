@@ -11,14 +11,14 @@
     {
         <div class="col-sm-2">@Html.TextBox("CheckDate", "", new { Class = "form-control date-picker" })</div>
         <div class="col-sm-2">@Html.DropDownListFor(m => m.ShiftID, (SelectList)Model.ShiftIDList, new { Class = "form-control" })</div>
-        <div class="col-sm-6"><label class="checkbox"><input type="checkbox" id="chk" class="checkbox">顯示所有項目</label></div>
+        <div class="col-sm-6"><label class="checkbox"><input type="checkbox" id="chk" class="checkbox" >顯示所有項目</label></div>
         <div class="col-sm-2"><input type="submit" class="btn btn-default" value="取得檢核資料" id="getDatabtn" /></div>
     }
 </div>
 
 <div class="row table-bordered" id="handoverdiv">
-    <div class="col-sm-2"><label class="control-label h4">昨日交接事項</label></div>
-    <div class="col-sm-10"><p class="text-danger h4">@Html.DisplayFor(m => m.HandoverItem, Model.HandoverItem, new { @class = "form-control" })</p></div>
+    <div class="col-sm-2"><label class="btn-lg btn-danger" id="handoverbtn" >昨日交接事項</label></div>
+    <div class="col-sm-9"><p class="text-danger h4">@Html.DisplayFor(m => m.HandoverItem, Model.HandoverItem, new { @class = "form-control" })</p></div>
     </div>
 
  <div id="checkdiv" class="row">
@@ -113,10 +113,10 @@
                             @*<td>@Html.CheckBox("檢核結果", new { id = ListID, @checked = @item.CheckResult, @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID })</td>*@
                             <td>
                                 <label class="radio-inline">
-                                     @Html.RadioButton(ListID, "正常", new { @checked = "checked", @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID }):正常
+                                     @Html.RadioButton(ListID, "正常", new { @checked = "checked", @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID }):正常
                                 </label>
                                 <label class="radio-inline">
-                                     @Html.RadioButton(ListID, "異常", new { @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID }):異常
+                                     @Html.RadioButton(ListID, "異常", new { @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID }):異常
                                 </label>
                             </td>
                                     }
@@ -125,10 +125,10 @@
                             @*<td>@Html.CheckBox("檢核結果", new { id = ListID, @checked = @item.CheckResult, @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled })</td>*@
                             <td>
                                 <label class="radio-inline">
-                                     @Html.RadioButton(ListID, "正常", new { @checked = "checked", @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):正常
+                                     @Html.RadioButton(ListID, "正常", new { @checked = "checked", @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):正常
                                 </label>
                                 <label class="radio-inline">
-                                     @Html.RadioButton(ListID, "異常", new { @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):異常
+                                     @Html.RadioButton(ListID, "異常", new { @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):異常
                                 </label>
                             </td>
                                     }
@@ -140,10 +140,10 @@
                             @*<td>@Html.CheckBox("檢核結果", new { id = ListID, @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID })</td>*@
                             <td>
                                 <label class="radio-inline">
-                                     @Html.RadioButton(ListID, "正常", new { @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID }):正常
+                                     @Html.RadioButton(ListID, "正常", new { @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID }):正常
                                 </label>
                                 <label class="radio-inline">
-                                     @Html.RadioButton(ListID, "異常", new { @checked = "checked", @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID }):異常
+                                     @Html.RadioButton(ListID, "異常", new { @checked = "checked", @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID }):異常
                                 </label>
                             </td>
                                     }
@@ -152,10 +152,10 @@
                             @*<td>@Html.CheckBox("檢核結果", new { id = ListID, @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled })</td>*@
                             <td>
                                 <label class="radio-inline">
-                                     @Html.RadioButton(ListID, "正常", new { @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):正常
+                                     @Html.RadioButton(ListID, "正常", new { @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):正常
                                 </label>
                                 <label class="radio-inline">
-                                     @Html.RadioButton(ListID, "異常", new { @checked = "checked", @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):異常
+                                     @Html.RadioButton(ListID, "異常", new { @checked = "checked", @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):異常
                                 </label>
                             </td>
                                     }
@@ -168,10 +168,10 @@
                             @*<td>@Html.CheckBox("檢核結果", new { id = ListID, @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID })</td>*@
                             <td>
                                 <label class="radio-inline">
-                                     @Html.RadioButton(ListID, "正常", new { @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID }):正常
+                                     @Html.RadioButton(ListID, "正常", new { @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID }):正常
                                 </label>
                                 <label class="radio-inline">
-                                     @Html.RadioButton(ListID, "異常", new { @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID }):異常
+                                     @Html.RadioButton(ListID, "異常", new { @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID }):異常
                                 </label>
                             </td>
                                     }
@@ -180,10 +180,10 @@
                             @*<td>@Html.CheckBox("檢核結果", new { id = ListID, @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled })</td>*@
                             <td>
                                 <label class="radio-inline">
-                                     @Html.RadioButton(ListID, "正常", new { @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):正常
+                                     @Html.RadioButton(ListID, "正常", new { @class = "checkbox autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):正常
                                 </label>
                                 <label class="radio-inline">
-                                     @Html.RadioButton(ListID, "異常", new { @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled  }):異常
+                                     @Html.RadioButton(ListID, "異常", new { @class = "checkbox autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled  }):異常
                                 </label>
                             </td>
                                     }
@@ -236,16 +236,10 @@
                     }
                 });
 
-                $("#handoverdiv").mouseover(function () {
+                $("#handoverbtn").click(function () {
                     //alert("mouseover");
                     $("#handoverdiv").addClass("hidden");
                 });
-
-                var handoveritem=$("#handoverdiv").val();
-                if (handoveritem == "一切正常" || handoveritem=="") {
-                    //alert("mouseover");
-                    $("#handoverdiv").addClass("hidden");
-                }
 
                 //依據狀態隱藏簽章選項
                 //if ($(":disabled").length > 0) {
@@ -292,7 +286,7 @@
                     //alert("ListID:" + ListID);
                     //alert("CheckDate:" + CheckDate);
                     //alert("Shift:" + ShiftID);
-
+                    var tr = $(this).parent().parent().parent();
                     $.ajax({
                         url: "@Url.Content("~/Process/Check")",
                         type: "POST",
@@ -303,6 +297,7 @@
                         },
                         success: function (data) {
                             //alert(data);
+                            refreshHideTr();
                         }
                     });
                 });
@@ -321,19 +316,36 @@
                         var CanConfirm = true;
                         $(" .autocheck").each(function () {
                             var inputtype = $(this).prop("type");
+                           // alert(inputtype);
                             var v;
                             if (inputtype == "textarea" || inputtype == "textbox") {
                                 v = $(this).val();
+                                if (v == "") {
+                                    alert("a");
+                                    CanConfirm = false;
+                                }
                             }
-                            else if (inputtype == "checkbox") {
-                                v = $(this).prop("checked");
+                            else if (inputtype == "radio") {
+                                //v = $(this).prop("checked");
+                                //if (v  != "true" || v != "false") {
+                                //    alert(v);
+                                //    CanConfirm = false;
+                                //}
+
+                                if ($("table:visible input:checked").length + 1 != $("table:visible tr").length) {
+                                    CanConfirm = false;
+                                }
+                            }
+                            else {
+                                alert(inputtype);
                             }
 
-                            if (v == "" || v == false) {
-                                CanConfirm = false;
-                            }
+                            //if (v == "") {
+                            //   // alert(v);
+                            //    CanConfirm = false;
+                            //}
                         });
-
+                        alert(CanConfirm);
                         //都有輸入才能確認
                         if (CanConfirm) {
                             var TmpCheckDate = $(".date-picker").val();
@@ -428,17 +440,15 @@
                 }
 
                 //隱藏/顯示已檢核過項目
-                $("#chk").change(function () {
-                    //alert($(this).is(":checked"));
-                    if ($(this).is(":checked")) {
-                        $(".chk:checked").parent().parent().removeClass("hidden");
-
-                    } else {
-                        $(".chk:checked").parent().parent().addClass("hidden");
-                    }
-                }).change();
+                $("#chk").change(refreshHideTr).change();
             });
-
+            function refreshHideTr() {
+                if ($("#chk").is(":checked")) {
+                    $(".autocheck:checked").parent().parent().parent().show();
+                } else {
+                    $(".autocheck:checked").parent().parent().parent().hide();
+                }
+            }
             //組合簽章本文
             function getBeSingedData(CheckSN, CheckID, CheckDate, ShiftID, UseHwSign, now) {
                 var Symbol = "|";
