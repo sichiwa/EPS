@@ -420,8 +420,9 @@ namespace EPS.Controllers
 
             try
             {
-                TotalCount = CheckSNs.Count();
-                foreach (var item in CheckSNs)
+
+                TotalCount = CheckSNs.Distinct().Count();
+                foreach (var item in CheckSNs.Distinct())
                 {
                     CHECKPROCESS CP = context.CHECKPROCESSES.Find(item);
                     REJECTREASON RR = new REJECTREASON();

@@ -106,9 +106,19 @@ namespace EPS.Controllers
                         //Session["UseCertLogin"] = true;
                         Session["UserID"] = model.UserID;
                         //Session["UserID"] = "TAS191";
-                        Session["UserRole"] = SF.getUserRole(model.UserID);
+                        int UserRole= SF.getUserRole(model.UserID);
+                        Session["UserRole"] = UserRole;
 
-                        return RedirectToAction("Index", "Process");
+                        //主管導向覆核頁面
+                        if (UserRole > 2)
+                        {
+                            return RedirectToAction("Index", "Review");
+                        }
+                        else
+                        {
+                            //導向檢查頁面
+                            return RedirectToAction("Index", "Process");
+                        }
                     }
                     else
                     {
@@ -141,6 +151,21 @@ namespace EPS.Controllers
             else
             {
                 return RedirectToAction("Login", "Account");
+            }
+        }
+
+        public ActionResult Home()
+        {
+            int UserRole = Convert.ToInt32(Session["UserRole"].ToString());
+            //主管導向覆核頁面
+            if (UserRole > 2)
+            {
+                return RedirectToAction("Index", "Review");
+            }
+            else
+            {
+                //導向檢查頁面
+                return RedirectToAction("Index", "Process");
             }
         }
 

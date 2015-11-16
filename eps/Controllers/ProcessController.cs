@@ -34,6 +34,20 @@ namespace EPS.Controllers
                 {
                     Shift = "04";
                 }
+                else
+                {
+                    if (nowDate.Hour == 14 && nowDate.Minute >= 30)
+                    {
+                        Shift = "03";
+                    }
+                    else
+                    {
+                        if (nowDate.Hour > 14)
+                        {
+                            Shift = "03";
+                        }
+                    }
+                }
             }
 
             if (string.IsNullOrEmpty(CheckDate))
@@ -68,6 +82,20 @@ namespace EPS.Controllers
                 {
                     ShiftID = "04";
                 }
+                else
+                {
+                    if (nowDate.Hour == 14 && nowDate.Minute >= 30)
+                    {
+                        ShiftID = "03";
+                    }
+                    else
+                    {
+                        if (nowDate.Hour>14)
+                        {
+                            ShiftID = "03";
+                        }
+                    }
+                }
             }
 
             if (string.IsNullOrEmpty(CheckDate))
@@ -85,7 +113,7 @@ namespace EPS.Controllers
                 string parsedTime = "取得檢核件時間錯誤";
                 if (DateTime.TryParseExact(CheckDate, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsed))
                 {
-                     parsedTime = parsed.ToString("yyyy-MM-dd");
+                    parsedTime = parsed.ToString("yyyy-MM-dd");
                 }
                 TempData["CheckDateNow"] = parsedTime;
                 return View(vCs);
@@ -128,7 +156,8 @@ namespace EPS.Controllers
                     {
                         vCs.ShiftID = Shift;
                         //取得班別清單
-                        var query1 = from s in context.CHECKSHIFTS
+                        var Shifts = new string[] { "01", "03","04" };
+                        var query1 = from s in context.CHECKSHIFTS.Where(b => Shifts.Contains(b.ShiftID))
                                      select new
                                      {
                                          s.ShiftID,
@@ -162,7 +191,8 @@ namespace EPS.Controllers
                     {
                         vCs.ShiftID = Shift;
                         //取得班別清單
-                        var query1 = from s in context.CHECKSHIFTS
+                        var Shifts = new string[] { "01", "03", "04" };
+                        var query1 = from s in context.CHECKSHIFTS.Where(b => Shifts.Contains(b.ShiftID))
                                      select new
                                      {
                                          s.ShiftID,
@@ -171,7 +201,7 @@ namespace EPS.Controllers
 
                         vCs.ShiftIDList = new SelectList(query1, "ShiftID", "ShiftValue");
                         //取得昨日交接事項
-                        vCs.HandoverItem = GetHandOverItem(CheckDate,-1);
+                        vCs.HandoverItem = GetHandOverItem(CheckDate, -1);
                         return vCs;
                     }
                     else
@@ -527,7 +557,7 @@ namespace EPS.Controllers
                         RD.CheckSN = q.CheckSN;
                         RD.ListName = item.ListName;
                         RD.ShiftOneChecked = "N/A";
-                        RD.ShiftTrheeChecked = "N/A"; 
+                        RD.ShiftTrheeChecked = "N/A";
                         RD.ShiftFourChecked = "N/A";
                         RD.CreateAccount = "System";
                         RD.CreateTime = DateTime.Now;
@@ -564,7 +594,7 @@ namespace EPS.Controllers
         /// </summary>
         /// <param name="d">要取得幾天前的</param>
         /// <returns></returns>
-        private string GetHandOverItem(string CheckDate,double d)
+        private string GetHandOverItem(string CheckDate, double d)
         {
             string Result = string.Empty;
 
@@ -582,7 +612,7 @@ namespace EPS.Controllers
 
             if (query != null)
             {
-                if (query.Count()>0)
+                if (query.Count() > 0)
                 {
                     Result = query.First().CheckResult;
                 }
@@ -741,47 +771,47 @@ namespace EPS.Controllers
                 int i = 0;
                 foreach (var item in CheckSNs)
                 {
-                //取得CHECKPROCESS物件
-                CHECKPROCESS CP = context.CHECKPROCESSES.Find(item);
+                    //取得CHECKPROCESS物件
+                    CHECKPROCESS CP = context.CHECKPROCESSES.Find(item);
 
-                if (CP != null)
-                {
-                    //update CHECKPROCESSES
-                    EPSUSER U = context.EPSUSERS.Find(Session["UserID"].ToString().Trim());
-
-                    switch (Shift)
+                    if (CP != null)
                     {
-                        //早班
-                        case "01":
-                            CP.ShiftOne = U.UserName;
-                            CP.ShiftOneSign = SignedDatas[i];
-                            CP.CloseStutus = "早班檢核完畢";
-                            break;
-                        //晚班
-                        case "03":
-                            CP.ShiftThree = U.UserName;
-                            CP.ShiftThreeSign = SignedDatas[i];
-                            CP.CloseStutus = "晚班檢核完畢";
-                            break;
-                        //假日班
-                        case "04":
-                            CP.ShiftFour = U.UserName;
-                            CP.ShiftFourSign = SignedDatas[i];
-                            CP.CloseStutus = "假日班檢核完畢";
-                            break;
-                    }
+                        //update CHECKPROCESSES
+                        EPSUSER U = context.EPSUSERS.Find(Session["UserID"].ToString().Trim());
 
-                    CP.UpadteAccount = Session["UserID"].ToString().Trim();
-                    CP.UpdateTime = DateTime.Now;
-                    context.Entry(CP).State = EntityState.Modified;
-                    context.SaveChanges();
+                        switch (Shift)
+                        {
+                            //早班
+                            case "01":
+                                CP.ShiftOne = U.UserName;
+                                CP.ShiftOneSign = SignedDatas[i];
+                                CP.CloseStutus = "早班檢核完畢";
+                                break;
+                            //晚班
+                            case "03":
+                                CP.ShiftThree = U.UserName;
+                                CP.ShiftThreeSign = SignedDatas[i];
+                                CP.CloseStutus = "晚班檢核完畢";
+                                break;
+                            //假日班
+                            case "04":
+                                CP.ShiftFour = U.UserName;
+                                CP.ShiftFourSign = SignedDatas[i];
+                                CP.CloseStutus = "假日班檢核完畢";
+                                break;
+                        }
 
-                    string CheckTitle = "";
-                    CHECKTITLE CT = context.CHECKTITLES.Find(CheckIDs[i]);
-                    if (CT != null)
-                    {
-                        CheckTitle = CT.Title;
-                    }
+                        CP.UpadteAccount = Session["UserID"].ToString().Trim();
+                        CP.UpdateTime = DateTime.Now;
+                        context.Entry(CP).State = EntityState.Modified;
+                        context.SaveChanges();
+
+                        string CheckTitle = "";
+                        CHECKTITLE CT = context.CHECKTITLES.Find(CheckIDs[i]);
+                        if (CT != null)
+                        {
+                            CheckTitle = CT.Title;
+                        }
 
                         //更新覆核表單
                         var query = context.REVIEWDATAS.Where(b => b.CheckDate == CheckDate);
@@ -821,7 +851,7 @@ namespace EPS.Controllers
                                             {
                                                 q.ShiftOneChecked = "異常";
                                             }
-                                         
+
                                         }
                                         else if (Shift == "03")
                                         {
@@ -853,54 +883,57 @@ namespace EPS.Controllers
                                 context.Entry(q).State = EntityState.Modified;
                                 context.SaveChanges();
                             }
-
-                         if (Shift == "03" || Shift == "04")
+                        }
+                        else
                         {
-                            bool CanNotify = true;
-                            var queryCP = context.CHECKPROCESSES.Where(b=>b.CheckDate==CheckDate);
-                            foreach (var item1 in queryCP.ToList())
-                            {
-                                if (Shift == "03")
-                                {
-                                    if (item1.ShiftOne == "" || item1.ShiftThree=="")
-                                    {
-                                        CanNotify = false;
-                                        break;
-                                    }
-                                }
-                                else if (Shift == "04")
-                                {
-                                    if (item1.ShiftFour=="")
-                                    {
-                                        CanNotify = false;
-                                        break;
-                                    }
-                                }
-                            }
+                            //沒有覆核表單
+                        }
+                    }
 
-                            if (CanNotify)
+                    SL.EndDateTime = DateTime.Now;
+                    SL.TotalCount = 1;
+                    SL.SuccessCount = 1;
+                    SL.FailCount = 0;
+                    SL.Result = false;
+                    SL.Msg = "確認[" + item + "]作業成功";
+                    SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+                }
+                i++;
+
+                if (Shift == "03" || Shift == "04")
+                {
+                    bool CanNotify = true;
+                    string CloseStutus = "";
+                    var queryCP = context.CHECKPROCESSES.Where(b => b.CheckDate == CheckDate);
+                    foreach (var item1 in queryCP.ToList())
+                    {
+                        if (Shift == "03")
+                        {
+                            CloseStutus = "晚班檢核完畢";
+                            if (item1.ShiftOne == "" || item1.ShiftThree == "")
                             {
-                                //通知下一位負責人
-                                SF.emailNotify2ReviewbyDate(CP.CloseStutus, Session["UserID"].ToString(),
-                                                            CheckDate, "覆核");
+                                CanNotify = false;
+                                break;
+                            }
+                        }
+                        else if (Shift == "04")
+                        {
+                            CloseStutus = "假日班檢核完畢";
+                            if (item1.ShiftFour == "")
+                            {
+                                CanNotify = false;
+                                break;
                             }
                         }
                     }
-                    else
+
+                    if (CanNotify)
                     {
-                        //沒有覆核表單
+                        //通知下一位負責人
+                        SF.emailNotify2ReviewbyDate(CloseStutus, Session["UserID"].ToString(),
+                                                    CheckDate, "覆核");
                     }
                 }
-              
-                SL.EndDateTime = DateTime.Now;
-                SL.TotalCount = 1;
-                SL.SuccessCount = 1;
-                SL.FailCount = 0;
-                SL.Result = false;
-                SL.Msg = "確認[" + item + "]作業成功";
-                SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
-                }
-                i++;
                 return "確認成功";
             }
             catch (Exception ex)
@@ -917,14 +950,14 @@ namespace EPS.Controllers
             }
         }
 
-        private Boolean  getCheckReuslt(string CheckDate,string ShitfID, string ListName)
+        private Boolean getCheckReuslt(string CheckDate, string ShitfID, string ListName)
         {
             Boolean Reuslt = true;
 
             var query = context.CHECKLISTS.Where(b => b.ListName == ListName);
             foreach (var item in query.ToList())
             {
-                var  aa = context.CHECKPROCESSDETAILS.Where(b => b.ShiftID == ShitfID).Where(b => b.CheckDate == CheckDate).Where(b => b.ListID == item.ListID).Where(b => b.CheckResult == "false");
+                var aa = context.CHECKPROCESSDETAILS.Where(b => b.ShiftID == ShitfID).Where(b => b.CheckDate == CheckDate).Where(b => b.ListID == item.ListID).Where(b => b.CheckResult == "false");
 
                 if (aa.Count() > 0)
                 {

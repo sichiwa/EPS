@@ -4,8 +4,6 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
-
 <p>
     @Html.ActionLink("新增文件", "Create")
 </p>
@@ -59,7 +57,7 @@
             @Html.DisplayFor(modelItem => item.UpdateTime)
         </td>
         <td>
-            @Html.ActionLink("編輯", "Edit", new { CheckID = item.CheckID }) |
+            @*@Html.ActionLink("編輯", "Edit", new { CheckID = item.CheckID }) |*@
             @Html.ActionLink("新增檢核項目", "AddItem", new { CheckID = item.CheckID,Title=item.Title }) |
             @Html.ActionLink("編輯檢核項目", "ListItem", new { CheckID = item.CheckID, Title = item.Title })
         </td>

@@ -11,94 +11,94 @@
     {
         <div class="col-sm-2">@Html.TextBox("CheckDate", "", new { Class = "form-control date-picker" })</div>
         <div class="col-sm-2">@Html.DropDownListFor(m => m.ShiftID, (SelectList)Model.ShiftIDList, new { Class = "form-control" })</div>
-        <div class="col-sm-6"><label class="checkbox"><input type="checkbox" id="chk" class="checkbox" >顯示所有項目</label></div>
+        <div class="col-sm-6"><label class="checkbox"><input type="checkbox" id="chk" class="checkbox">顯示所有項目</label></div>
         <div class="col-sm-2"><input type="submit" class="btn btn-default" value="取得檢核資料" id="getDatabtn" /></div>
     }
 </div>
 
 <div class="row table-bordered" id="handoverdiv">
-    <div class="col-sm-2"><label class="btn-lg btn-danger" id="handoverbtn" >昨日交接事項</label></div>
+    <div class="col-sm-2"><label class="btn-lg btn-danger" id="handoverbtn">昨日交接事項</label></div>
     <div class="col-sm-9"><p class="text-danger h4">@Html.DisplayFor(m => m.HandoverItem, Model.HandoverItem, new { @class = "form-control" })</p></div>
-    </div>
+</div>
 
- <div id="checkdiv" class="row">
-        <div id="tabs">
-            <ul id="ul">
+<div id="checkdiv" class="row">
+    <div id="tabs">
+        <ul id="ul">
             @foreach (var item in Model.vCHECKPROCESS)
             {
                 string link = "#" + @item.CheckSN + "-" + @item.CheckID;
-                    <li>
-                        <a href=@link>@item.Title</a>
-                    </li>
-                }
-            </ul>
+                <li>
+                    <a href=@link>@item.Title</a>
+                </li>
+            }
+        </ul>
 
-            @foreach (var vCP in Model.vCHECKPROCESS)
+        @foreach (var vCP in Model.vCHECKPROCESS)
             {
                 string divid = vCP.CheckSN + "-" + @vCP.CheckID;
 
-                <div id=@divid>
-                    <table class="table">
-                        <tr>
-                            <td>檢核時間</td>
-                            <td>檢核項目</td>
-                            <td>檢核結果</td>
-                            <td>狀態</td>
-                        </tr>
-                        @foreach (var item in vCP.vCHECKDETAILs)
+            <div id=@divid>
+                <table class="table">
+                    <tr>
+                        <td>檢核時間</td>
+                        <td>檢核項目</td>
+                        <td>檢核結果</td>
+                        <td>狀態</td>
+                    </tr>
+                    @foreach (var item in vCP.vCHECKDETAILs)
+                    {
+                        string Status = "檢查中";
+                        string Disabled = "";
+                        if (item.CloseStatus == "晚班檢核完畢" || item.CloseStatus == "假日班檢核完畢")
                         {
-                            string Status = "檢查中";
-                            string Disabled = "";
-                            if (item.CloseStatus == "晚班檢核完畢" || item.CloseStatus == "假日班檢核完畢")
-                            {
-                                Status = "領班人員覆核中";
-                                Disabled = "disabled";
-                                //btnDisabled = true;
-                            }
-                            else if (item.CloseStatus == "領班覆核完畢")
-                            {
-                                Status = "主管覆核中";
-                                Disabled = "disabled";
-                                //btnDisabled = true;
-                            }
-                            else if (item.CloseStatus == "主管覆核完畢 ")
-                            {
-                                Status = "系統部主管覆核中";
-                                Disabled = "disabled";
-                                //btnDisabled = true;
-                            }
-                            else if (item.CloseStatus == "系統部主管覆核完畢")
-                            {
-                                Status = "已結案";
-                                Disabled = "disabled";
-                                //btnDisabled = true;
-                            }
-                            <tr>
-                                <td>@item.StartTime</td>
-                                <td>@item.ListName</td>
-                                @if (item.CheckType != "3")
+                            Status = "領班人員覆核中";
+                            Disabled = "disabled";
+                            //btnDisabled = true;
+                        }
+                        else if (item.CloseStatus == "領班覆核完畢")
+                        {
+                            Status = "主管覆核中";
+                            Disabled = "disabled";
+                            //btnDisabled = true;
+                        }
+                        else if (item.CloseStatus == "主管覆核完畢 ")
+                        {
+                            Status = "系統部主管覆核中";
+                            Disabled = "disabled";
+                            //btnDisabled = true;
+                        }
+                        else if (item.CloseStatus == "已結案")
+                        {
+                            Status = "已結案";
+                            Disabled = "disabled";
+                            //btnDisabled = true;
+                        }
+                        <tr>
+                            <td>@item.StartTime</td>
+                            <td>@item.ListName</td>
+                            @if (item.CheckType != "3")
                             {
                                 string ListID = "CheckResult" + item.ListID;
                                 if (item.CheckType == "2")
                                 {
                                     if (Disabled == "")
                                     {
-                            <td>@Html.TextAreaFor(model => item.CheckResult, 15, 100, new { id = ListID, @class = "form-control autocheck", @placeholder = "請輸入檢核結果", data = @item.CheckID, ListID = @item.ListID })</td>
+                                        <td>@Html.TextAreaFor(model => item.CheckResult, 15, 100, new { id = ListID, @class = "form-control autocheck", @placeholder = "請輸入檢核結果", data = @item.CheckID, ListID = @item.ListID })</td>
                                     }
                                     else
                                     {
-                            <td>@Html.TextAreaFor(model => item.CheckResult, 15, 100, new { id = ListID, @class = "form-control autocheck", @placeholder = "請輸入檢核結果", data = @item.CheckID, ListID = @item.ListID, @Disabled })</td>
+                                        <td>@Html.TextAreaFor(model => item.CheckResult, 15, 100, new { id = ListID, @class = "form-control autocheck", @placeholder = "請輸入檢核結果", data = @item.CheckID, ListID = @item.ListID, @Disabled })</td>
                                     }
                                 }
                                 else
                                 {
                                     if (Disabled == "")
                                     {
-                            <td>@Html.EditorFor(model => item.CheckResult, new { @class = "form-control autocheck", @placeholder = "請輸入檢核結果", data = @item.CheckID, ListID = @item.ListID })</td>
+                                        <td>@Html.EditorFor(model => item.CheckResult, new { @class = "form-control autocheck", @placeholder = "請輸入檢核結果", data = @item.CheckID, ListID = @item.ListID })</td>
                                     }
                                     else
                                     {
-                            <td>@Html.EditorFor(model => item.CheckResult, new { @class = "form-control autocheck", @placeholder = "請輸入檢核結果", data = @item.CheckID, ListID = @item.ListID, @Disabled })</td>
+                                        <td>@Html.EditorFor(model => item.CheckResult, new { @class = "form-control autocheck", @placeholder = "請輸入檢核結果", data = @item.CheckID, ListID = @item.ListID, @Disabled })</td>
                                     }
                                 }
                             }
@@ -110,54 +110,54 @@
                                 {
                                     if (Disabled == "")
                                     {
-                            @*<td>@Html.CheckBox("檢核結果", new { id = ListID, @checked = @item.CheckResult, @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID })</td>*@
-                            <td>
-                                <label class="radio-inline">
-                                     @Html.RadioButton(ListID, "正常", new { @checked = "checked", @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID }):正常
-                                </label>
-                                <label class="radio-inline">
-                                     @Html.RadioButton(ListID, "異常", new { @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID }):異常
-                                </label>
-                            </td>
+                                        @*<td>@Html.CheckBox("檢核結果", new { id = ListID, @checked = @item.CheckResult, @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID })</td>*@
+                                        <td>
+                                            <label class="radio-inline">
+                                                @Html.RadioButton(ListID, "正常", new { @checked = "checked", @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID }):正常
+                                            </label>
+                                            <label class="radio-inline">
+                                                @Html.RadioButton(ListID, "異常", new { @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID }):異常
+                                            </label>
+                                        </td>
                                     }
                                     else
                                     {
-                            @*<td>@Html.CheckBox("檢核結果", new { id = ListID, @checked = @item.CheckResult, @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled })</td>*@
-                            <td>
-                                <label class="radio-inline">
-                                     @Html.RadioButton(ListID, "正常", new { @checked = "checked", @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):正常
-                                </label>
-                                <label class="radio-inline">
-                                     @Html.RadioButton(ListID, "異常", new { @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):異常
-                                </label>
-                            </td>
+                                        @*<td>@Html.CheckBox("檢核結果", new { id = ListID, @checked = @item.CheckResult, @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled })</td>*@
+                                        <td>
+                                            <label class="radio-inline">
+                                                @Html.RadioButton(ListID, "正常", new { @checked = "checked", @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):正常
+                                            </label>
+                                            <label class="radio-inline">
+                                                @Html.RadioButton(ListID, "異常", new { @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):異常
+                                            </label>
+                                        </td>
                                     }
                                 }
                                 else if (@item.CheckResult == "false")
                                 {
                                     if (Disabled == "")
                                     {
-                            @*<td>@Html.CheckBox("檢核結果", new { id = ListID, @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID })</td>*@
-                            <td>
-                                <label class="radio-inline">
-                                     @Html.RadioButton(ListID, "正常", new { @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID }):正常
-                                </label>
-                                <label class="radio-inline">
-                                     @Html.RadioButton(ListID, "異常", new { @checked = "checked", @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID }):異常
-                                </label>
-                            </td>
+                                        @*<td>@Html.CheckBox("檢核結果", new { id = ListID, @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID })</td>*@
+                                        <td>
+                                            <label class="radio-inline">
+                                                @Html.RadioButton(ListID, "正常", new { @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID }):正常
+                                            </label>
+                                            <label class="radio-inline">
+                                                @Html.RadioButton(ListID, "異常", new { @checked = "checked", @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID }):異常
+                                            </label>
+                                        </td>
                                     }
                                     else
                                     {
-                            @*<td>@Html.CheckBox("檢核結果", new { id = ListID, @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled })</td>*@
-                            <td>
-                                <label class="radio-inline">
-                                     @Html.RadioButton(ListID, "正常", new { @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):正常
-                                </label>
-                                <label class="radio-inline">
-                                     @Html.RadioButton(ListID, "異常", new { @checked = "checked", @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):異常
-                                </label>
-                            </td>
+                                        @*<td>@Html.CheckBox("檢核結果", new { id = ListID, @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled })</td>*@
+                                        <td>
+                                            <label class="radio-inline">
+                                                @Html.RadioButton(ListID, "正常", new { @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):正常
+                                            </label>
+                                            <label class="radio-inline">
+                                                @Html.RadioButton(ListID, "異常", new { @checked = "checked", @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):異常
+                                            </label>
+                                        </td>
                                     }
                                 }
 
@@ -165,295 +165,298 @@
                                 {
                                     if (Disabled == "")
                                     {
-                            @*<td>@Html.CheckBox("檢核結果", new { id = ListID, @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID })</td>*@
-                            <td>
-                                <label class="radio-inline">
-                                     @Html.RadioButton(ListID, "正常", new { @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID }):正常
-                                </label>
-                                <label class="radio-inline">
-                                     @Html.RadioButton(ListID, "異常", new { @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID }):異常
-                                </label>
-                            </td>
+                                        @*<td>@Html.CheckBox("檢核結果", new { id = ListID, @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID })</td>*@
+                                        <td>
+                                            <label class="radio-inline">
+                                                @Html.RadioButton(ListID, "正常", new { @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID }):正常
+                                            </label>
+                                            <label class="radio-inline">
+                                                @Html.RadioButton(ListID, "異常", new { @class = "checkbox  autocheck", data = @item.CheckID, ListID = @item.ListID }):異常
+                                            </label>
+                                        </td>
                                     }
                                     else
                                     {
-                            @*<td>@Html.CheckBox("檢核結果", new { id = ListID, @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled })</td>*@
-                            <td>
-                                <label class="radio-inline">
-                                     @Html.RadioButton(ListID, "正常", new { @class = "checkbox autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):正常
-                                </label>
-                                <label class="radio-inline">
-                                     @Html.RadioButton(ListID, "異常", new { @class = "checkbox autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled  }):異常
-                                </label>
-                            </td>
+                                        @*<td>@Html.CheckBox("檢核結果", new { id = ListID, @class = "checkbox chk autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled })</td>*@
+                                        <td>
+                                            <label class="radio-inline">
+                                                @Html.RadioButton(ListID, "正常", new { @class = "checkbox autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):正常
+                                            </label>
+                                            <label class="radio-inline">
+                                                @Html.RadioButton(ListID, "異常", new { @class = "checkbox autocheck", data = @item.CheckID, ListID = @item.ListID, @Disabled }):異常
+                                            </label>
+                                        </td>
                                     }
                                 }
                             }
-                                <td>
-                                    @Html.HiddenFor(model => item.ListID)
-                                    @Html.HiddenFor(model => item.CheckID)
-                                    <label class="control-label">@Status</label>
-                                </td>
-                            </tr>
-                        }
-                    </table>
-                </div>
-            }
-        </div>
+                            <td>
+                                @Html.HiddenFor(model => item.ListID)
+                                @Html.HiddenFor(model => item.CheckID)
+                                <label class="control-label">@Status</label>
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        }
+    </div>
+</div>
+<br />
+<div id="Confirmdiv">
+    <div class="row">
+        <label class="radio-inline">
+            <input type="radio" id="HwSignrbtn" checked class="Signrbtn" />卡片簽章
+        </label>
+        <label class="radio-inline">
+            <input type="radio" id="SwSignrbtn" class="Signrbtn" />軟體簽章
+        </label>
     </div>
     <br />
-    <div id="Confirmdiv">
-        <div class="row">
-            <label class="radio-inline">
-                <input type="radio" id="HwSignrbtn" checked class="Signrbtn" />卡片簽章
-            </label>
-            <label class="radio-inline">
-                <input type="radio" id="SwSignrbtn" class="Signrbtn" />軟體簽章
-            </label>
-        </div>
-        <br />
-        <div class="row form-inline" id="Pwddiv">
-            @Html.Label("憑證密碼", new { @Class = "Control-label" })
-            <input type="password" id="CertPwd" class="form-control" placeholder="請輸入憑證密碼" />
-        </div>
-        <br />
-        <div class="row">
-            <input type="hidden" id="Confirmhid" />
-            <input type="submit" id="Confirmbtn" class="btn btn-primary" value="確認檢核完成" />
-        </div>
+    <div class="row form-inline" id="Pwddiv">
+        @Html.Label("憑證密碼", new { @Class = "Control-label" })
+        <input type="password" id="CertPwd" class="form-control" placeholder="請輸入憑證密碼" />
     </div>
+    <br />
+    <div class="row">
+        <input type="hidden" id="Confirmhid" />
+        <input type="submit" id="Confirmbtn" class="btn btn-primary" value="確認檢核完成" />
+    </div>
+</div>
 
-    @Scripts.Render("~/bundles/SignData")
-    @section ProcessIndexScript
+@Scripts.Render("~/bundles/SignData")
+@section ProcessIndexScript
 {
-        <script>
-            $(function () {
-                $("#tabs").tabs({
-                    //tab選擇改變時，將CheckSN寫入Confirmhid
-                    activate: function (event, ui) {
-                        $("#Confirmhid").val(ui.newPanel.attr("id"))
-                        //alert(ui.newPanel.attr("id"));
+    <script>
+        $(function () {
+            $("#tabs").tabs({
+                //tab選擇改變時，將CheckSN寫入Confirmhid
+                activate: function (event, ui) {
+                    $("#Confirmhid").val(ui.newPanel.attr("id"))
+                    //alert(ui.newPanel.attr("id"));
+                }
+            });
+
+            $("#handoverbtn").click(function () {
+                //alert("mouseover");
+                $("#handoverdiv").addClass("hidden");
+            });
+
+            //依據狀態隱藏簽章選項
+            //if ($(":disabled").length > 0) {
+            //    $("#Confirmdiv").addClass("hidden");
+            //}
+
+            $("#getDatabtn").addClass("hidden");
+
+            //日期變化後從Server端重新讀取資料
+            $("#CheckDate").change(function () {
+                $("#getDatabtn").trigger("click");
+            });
+
+            //班別變化後從Server端重新讀取資料
+            $("#ShiftID").change(function () {
+                $("#getDatabtn").trigger("click");
+            });
+
+            //檢核輸入控制項變更時，將結果寫入Server端
+            $(".autocheck").change(function () {
+                var CheckSN = $("#Confirmhid").val().split("-")[0];//$(this).parents(".mytab").attr("id");
+                var CheckID = $(this).attr("data");
+                var ListID = $(this).attr("ListID");
+                var TmpCheckDate = $(".date-picker").val();
+                var CheckDate = "";
+                var ShiftID = $("#ShiftID").val();
+                var CheckInputID = "#CheckResult" + ListID;
+                //預設先抓CheckBox
+                var CheckResult = $(CheckInputID).prop("checked");
+                if (CheckResult == undefined) {
+                    //如果不是CheckBox，就抓TextArea
+                    CheckResult = $(CheckInputID).val();
+                }
+
+                var TmpArr = TmpCheckDate.split("-");
+
+                for (var i = 0; i < TmpArr.length; i++) {
+                    CheckDate += TmpArr[i];
+                }
+
+                //alert("TmpArr:" + TmpArr);
+                //alert("CheckSN:" + CheckSN);
+                //alert("CheckID:" + CheckID);
+                //alert("ListID:" + ListID);
+                //alert("CheckDate:" + CheckDate);
+                //alert("Shift:" + ShiftID);
+                var tr = $(this).parent().parent().parent();
+                $.ajax({
+                    url: "@Url.Content("~/Process/Check")",
+                    type: "POST",
+                    contextType: "text/html; charset=utf-8",
+                    data: {
+                        CheckSN: CheckSN, CheckID: CheckID, ListID: ListID,
+                        CheckResult: CheckResult, CheckDate: CheckDate, Shift: ShiftID
+                    },
+                    success: function (data) {
+                        //alert(data);
+                        refreshHideTr();
                     }
                 });
+            });
 
-                $("#handoverbtn").click(function () {
-                    //alert("mouseover");
-                    $("#handoverdiv").addClass("hidden");
-                });
+            //初始化Confirmhid
+            var href = $(".ui-tabs-anchor").attr("href");
+            var CheckSN = href.split("#")[1];
+            $("#Confirmhid").val(CheckSN);
+            //alert("initCheckSN:" + CheckSN);
 
-                //依據狀態隱藏簽章選項
-                //if ($(":disabled").length > 0) {
-                //    $("#Confirmdiv").addClass("hidden");
-                //}
+            //確認檢核完畢
+            $("#Confirmbtn").click(function () {
+                if (confirm("確認皆已檢核完畢!?")) {
 
-                $("#getDatabtn").addClass("hidden");
-
-                //日期變化後從Server端重新讀取資料
-                $("#CheckDate").change(function () {
-                    $("#getDatabtn").trigger("click");
-                });
-
-                //班別變化後從Server端重新讀取資料
-                $("#ShiftID").change(function () {
-                    $("#getDatabtn").trigger("click");
-                });
-
-                //檢核輸入控制項變更時，將結果寫入Server端
-                $(".autocheck").change(function () {
-                    var CheckSN = $("#Confirmhid").val().split("-")[0];//$(this).parents(".mytab").attr("id");
-                    var CheckID = $(this).attr("data");
-                    var ListID = $(this).attr("ListID");
-                    var TmpCheckDate = $(".date-picker").val();
-                    var CheckDate = "";
-                    var ShiftID = $("#ShiftID").val();
-                    var CheckInputID = "#CheckResult" + ListID;
-                    //預設先抓CheckBox
-                    var CheckResult = $(CheckInputID).prop("checked");
-                    if (CheckResult == undefined) {
-                        //如果不是CheckBox，就抓TextArea
-                        CheckResult = $(CheckInputID).val();
-                    }
-
-                    var TmpArr = TmpCheckDate.split("-");
-
-                    for (var i = 0; i < TmpArr.length; i++) {
-                        CheckDate += TmpArr[i];
-                    }
-
-                    //alert("TmpArr:" + TmpArr);
-                    //alert("CheckSN:" + CheckSN);
-                    //alert("CheckID:" + CheckID);
-                    //alert("ListID:" + ListID);
-                    //alert("CheckDate:" + CheckDate);
-                    //alert("Shift:" + ShiftID);
-                    var tr = $(this).parent().parent().parent();
-                    $.ajax({
-                        url: "@Url.Content("~/Process/Check")",
-                        type: "POST",
-                        contextType: "text/html; charset=utf-8",
-                        data: {
-                            CheckSN: CheckSN, CheckID: CheckID, ListID: ListID,
-                            CheckResult: CheckResult, CheckDate: CheckDate, Shift: ShiftID
-                        },
-                        success: function (data) {
-                            //alert(data);
-                            refreshHideTr();
-                        }
-                    });
-                });
-
-                //初始化Confirmhid
-                var href = $(".ui-tabs-anchor").attr("href");
-                var CheckSN = href.split("#")[1];
-                $("#Confirmhid").val(CheckSN);
-                //alert("initCheckSN:" + CheckSN);
-
-                //確認檢核完畢
-                $("#Confirmbtn").click(function () {
-                    if (confirm("確認皆已檢核完畢!?")) {
-
-                        //檢查文件是否有項目漏填，如果有就不能執行確認作業
-                        var CanConfirm = true;
-                        $(" .autocheck").each(function () {
-                            var inputtype = $(this).prop("type");
-                           // alert(inputtype);
-                            var v;
+                    //檢查文件是否有項目漏填，如果有就不能執行確認作業
+                    var CanConfirm = true;
+                    $(" .autocheck").each(function () {
+                        var inputtype = $(this).prop("type");
+                        // alert(inputtype);
+                        var v;
+                        //只要有錯誤就不檢查，直接回應給使用者
+                       // if (CanConfirm) {
                             if (inputtype == "textarea" || inputtype == "textbox") {
                                 v = $(this).val();
                                 if (v == "") {
-                                    alert("a");
+                                    //alert("a");
                                     CanConfirm = false;
                                 }
                             }
-                            else if (inputtype == "radio") {
-                                //v = $(this).prop("checked");
-                                //if (v  != "true" || v != "false") {
-                                //    alert(v);
-                                //    CanConfirm = false;
-                                //}
-
-                                if ($("table:visible input:checked").length + 1 != $("table:visible tr").length) {
-                                    CanConfirm = false;
-                                }
-                            }
-                            else {
-                                alert(inputtype);
-                            }
-
-                            //if (v == "") {
-                            //   // alert(v);
-                            //    CanConfirm = false;
+                        //}
+                        else if (inputtype == "radio") {
+                            //只要有錯誤就不檢查，直接回應給使用者
+                            // if (CanConfirm) {
+                            //alert(this.id);
+                            // alert($(" .autocheck:not(:checked)").size());
+                            if ($("input:radio[name=" + this.id + "]:checked").length==0)
+                            { CanConfirm = false; }
                             //}
-                        });
-                        alert(CanConfirm);
-                        //都有輸入才能確認
-                        if (CanConfirm) {
-                            var TmpCheckDate = $(".date-picker").val();
-                            var CheckDate = "";
-                            var ShiftID = $("#ShiftID").val();
-                            var UseHwSign = $("#HwSignrbtn").prop("checked");
-                            var TmpArr = TmpCheckDate.split("-");
-
-                            for (var i = 0; i < TmpArr.length; i++) {
-                                CheckDate += TmpArr[i];
-                            }
-                            var now = new Date();
-                            //組時間yyyy/MM/dd hh:mm:ss
-                            var now1 = now.getFullYear() + '/' + (now.getMonth() + 1) + '/' + now.getDate() + ' ' + now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
-
-                            var CheckSNs = [];
-                            var CheckIDs = [];
-                            var SignedDatas = [];
-                            $(".ui-tabs-anchor").each(function () {
-                                var tmphref = $(this).attr("href").split("#")[1];
-                                var dataarr = tmphref.split("-");
-                                //alert("CheckSN:" + dataarr[0]);
-                                //alert("CheckID:" + dataarr[1]);
-                                CheckSNs.push(dataarr[0]);
-                                CheckIDs.push(dataarr[1]);
-                                var tmpbeSignedData = getBeSingedData(dataarr[0], dataarr[1], CheckDate, ShiftID, UseHwSign, now1);
-                                if (UseHwSign == true) {
-                                    //硬體憑證簽章
-                                    SignedDatas.push(SignData(tmpbeSignedData));
-                                }
-                                else {
-                                    //軟體憑證簽章
-                                }
-                            });
-
-                            //alert("TmpArr:" + TmpArr);
-                            //alert("CheckSN:" + CheckSN);
-                            //alert("CheckID:" + CheckID);
-                            //alert("CheckDate:" + CheckDate);
-                            //alert("Shift:" + ShiftID);
-                            //alert("UseHwSign:" + UseHwSign);
-                            //alert("BeSignedData:" + BeSignedData);
-                            //alert("SignedData:" + SignedData);
-
-                            $.ajax({
-                                url: "@Url.Content("~/Process/Confirm")",
-                                type: "POST",
-                                contextType: "text/html; charset=utf-8",
-                                data: {
-                                    CheckSNs: CheckSNs, CheckIDs: CheckIDs,
-                                    CheckDate: CheckDate, Shift: ShiftID,
-                                    SignedDatas: SignedDatas
-                                },
-                                success: function (data) {
-                                    alert(data);
-                                },
-                                error: function (data) {
-                                    alert(data);
-                                }
-                            });
-
                         }
                         else {
-                            alert("您尚有項目未檢核完成!!");
+                            alert("未知的輸入型態");
+                            CanConfirm = false;
                         }
-                    }
-                });
 
-                $(".Signrbtn").change(function () {
-                    //var HwSign = $("#HwSignrbtn").prop("checked");
-                    if (this.id == "HwSignrbtn") {
-                        $("#SwSignrbtn").prop("checked", false);
-                        $("#Pwddiv").show();
+                        //if (v == "") {
+                        //   // alert(v);
+                        //    CanConfirm = false;
+                        //}
+                    });
+                    //alert(CanConfirm);
+                    //都有輸入才能確認
+                    if (CanConfirm) {
+                        var TmpCheckDate = $(".date-picker").val();
+                        var CheckDate = "";
+                        var ShiftID = $("#ShiftID").val();
+                        var UseHwSign = $("#HwSignrbtn").prop("checked");
+                        var TmpArr = TmpCheckDate.split("-");
+
+                        for (var i = 0; i < TmpArr.length; i++) {
+                            CheckDate += TmpArr[i];
+                        }
+                        var now = new Date();
+                        //組時間yyyy/MM/dd hh:mm:ss
+                        var now1 = now.getFullYear() + '/' + (now.getMonth() + 1) + '/' + now.getDate() + ' ' + now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
+
+                        var CheckSNs = [];
+                        var CheckIDs = [];
+                        var SignedDatas = [];
+                        $(".ui-tabs-anchor").each(function () {
+                            var tmphref = $(this).attr("href").split("#")[1];
+                            var dataarr = tmphref.split("-");
+                            //alert("CheckSN:" + dataarr[0]);
+                            //alert("CheckID:" + dataarr[1]);
+                            CheckSNs.push(dataarr[0]);
+                            CheckIDs.push(dataarr[1]);
+                            var tmpbeSignedData = getBeSingedData(dataarr[0], dataarr[1], CheckDate, ShiftID, UseHwSign, now1);
+                            var nowAccount = "@Session["UserID"]";
+                            if (UseHwSign == true) {
+                                //硬體憑證簽章
+                                SignedDatas.push(SignData(tmpbeSignedData,nowAccount));
+                            }
+                            else {
+                                //軟體憑證簽章
+                            }
+                        });
+
+                        //alert("TmpArr:" + TmpArr);
+                        //alert("CheckSN:" + CheckSN);
+                        //alert("CheckID:" + CheckID);
+                        //alert("CheckDate:" + CheckDate);
+                        //alert("Shift:" + ShiftID);
+                        //alert("UseHwSign:" + UseHwSign);
+                        //alert("BeSignedData:" + BeSignedData);
+                        //alert("SignedData:" + SignedData);
+
+                        $.ajax({
+                            url: "@Url.Content("~/Process/Confirm")",
+                            type: "POST",
+                            contextType: "text/html; charset=utf-8",
+                            data: {
+                                CheckSNs: CheckSNs, CheckIDs: CheckIDs,
+                                CheckDate: CheckDate, Shift: ShiftID,
+                                SignedDatas: SignedDatas
+                            },
+                            success: function (data) {
+                                alert(data);
+                            },
+                            error: function (data) {
+                                alert(data);
+                            }
+                        });
+
                     }
                     else {
-                        $("#HwSignrbtn").prop("checked", false);
-                        $("#Pwddiv").hide();
+                        alert("您尚有項目未檢核完成!!");
                     }
-                });
+                }
+            });
 
-                $(".date-picker").datepicker({
-                    dateFormat: "yy-mm-dd"
-                });
-
-                var ChooseDate = "@TempData["CheckDateNow"]";
-
-                if (ChooseDate != "") {
-                    $(".date-picker").datepicker("setDate", ChooseDate);
+            $(".Signrbtn").change(function () {
+                //var HwSign = $("#HwSignrbtn").prop("checked");
+                if (this.id == "HwSignrbtn") {
+                    $("#SwSignrbtn").prop("checked", false);
+                    $("#Pwddiv").show();
                 }
                 else {
-                    $(".date-picker").datepicker("setDate", new Date());
+                    $("#HwSignrbtn").prop("checked", false);
+                    $("#Pwddiv").hide();
                 }
-
-                //隱藏/顯示已檢核過項目
-                $("#chk").change(refreshHideTr).change();
             });
-            function refreshHideTr() {
-                if ($("#chk").is(":checked")) {
-                    $(".autocheck:checked").parent().parent().parent().show();
-                } else {
-                    $(".autocheck:checked").parent().parent().parent().hide();
-                }
+
+            $(".date-picker").datepicker({
+                dateFormat: "yy-mm-dd"
+            });
+
+            var ChooseDate = "@TempData["CheckDateNow"]";
+
+            if (ChooseDate != "") {
+                $(".date-picker").datepicker("setDate", ChooseDate);
             }
-            //組合簽章本文
-            function getBeSingedData(CheckSN, CheckID, CheckDate, ShiftID, UseHwSign, now) {
-                var Symbol = "|";
-                return CheckSN + Symbol + CheckID + Symbol + CheckDate + Symbol + ShiftID + Symbol + UseHwSign + Symbol + now
+            else {
+                $(".date-picker").datepicker("setDate", new Date());
             }
-        </script>
-    }
+
+            //隱藏/顯示已檢核過項目
+            $("#chk").change(refreshHideTr).change();
+        });
+        function refreshHideTr() {
+            if ($("#chk").is(":checked")) {
+                $(".autocheck:checked").parent().parent().parent().show();
+            } else {
+                $(".autocheck:checked").parent().parent().parent().hide();
+            }
+        }
+        //組合簽章本文
+        function getBeSingedData(CheckSN, CheckID, CheckDate, ShiftID, UseHwSign, now) {
+            var Symbol = "|";
+            return CheckSN + Symbol + CheckID + Symbol + CheckDate + Symbol + ShiftID + Symbol + UseHwSign + Symbol + now
+        }
+    </script>
+}
 

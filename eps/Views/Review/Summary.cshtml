@@ -7,11 +7,11 @@
 
 <div class="row">
     <div class="col-sm-2  "><label class="lead">事件描述及行動</label>  </div>
-    <div class="col-sm-10 "><p class="lead">@Model.EventItem</p></div>
+    <div class="col-sm-10 "><pre class="lead">@Model.EventItem</pre></div>
 </div>
 <div class="row">
     <div class="col-sm-2  lead"><label class="lead">交接事項</label> </div>
-    <div class="col-sm-10  "><p class="lead" >@Model.HandoverItem</p></div>
+    <div class="col-sm-10  "><pre class="lead" >@Model.HandoverItem</pre></div>
 </div>
 <hr />
     <div class="row">
@@ -58,7 +58,7 @@
                         }
                     </td>
                     <td>
-                        @if (item.ShiftOneChecked == "正常")
+                        @if (item.ShiftTrheeChecked == "正常")
                 {
                             <label class="text-success">正常</label>
                         }
@@ -163,7 +163,7 @@
                     var a = $(this).text().trim();
                     //alert(a);
                     if (a == "事件描述及行動" || a == "交接事項") {
-                        alert(a);
+                        //alert(a);
                         $(this).parent().hide();
                     }
 
@@ -186,6 +186,7 @@
                         var CheckDates = [];
                         $(".rp1").each(function () {
                             var CheckSN = $(this).text().trim();
+                            //alert("CheckSN:" + CheckSN);
                             var CheckDate = CheckSN.substring(0, 8);
                             CheckSNs.push(CheckSN);
                             CheckDates.push(CheckDate);
@@ -227,10 +228,11 @@
                         if (CanConfirm) {
                             var BeSignedData = getBeSingedData(CheckSNs.toString(), CheckDates.toString(), UseHwSign, now1);
                             var SignedData = "";
-
+                            var nowAccount = "@Session["UserID"]";
+                            //alert("nowAccount" + nowAccount);
                             if (UseHwSign == true) {
                                 //硬體憑證簽章
-                                SignedData = SignData(BeSignedData);
+                                SignedData = SignData(BeSignedData,nowAccount);
                             }
                             else {
                                 //軟體憑證簽章
@@ -275,9 +277,10 @@
                             //alert(Ression);
                             var CheckSNs = [];
                             var CheckDates = [];
-                            $(".rp1:visible").each(function () {
+                            $(".rp1").each(function () {
                                 var CheckSN = $(this).text().trim();
                                 var CheckDate = CheckSN.substring(0, 8);
+                                //alert("CheckSN:" + CheckSN);
                                 CheckSNs.push(CheckSN);
                                 CheckDates.push(CheckDate);
 

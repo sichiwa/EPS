@@ -5,7 +5,7 @@ if (typeof myobj == "undefined") {
 
 
 //憑證登入前端處理
-function SignData(Plaintext) {
+function SignData(Plaintext,nowAccount) {
     //alert('c');
     //連接讀卡機
     var retSetTokenType = myobj.SetTokenType(2);
@@ -41,40 +41,46 @@ function SignData(Plaintext) {
                     //抓員工編號
                     var Account = CNarr[2]
                     //alert('Account:'+ Account);
-
-                    //組簽章本文(Session id+員工編號+現在時間)
-                    //var Symbol = "|"
-                    //var SessionId = document.getElementById("SessionIdhid").value
-                    //alert('SessionId:' + SessionId);
-                    //var now = new Date();
-                    //組時間yyyy/MM/dd hh:mm:ss
-                    //var now1 = now.getFullYear() + '/' + (now.getMonth() + 1) + '/' + now.getDate() + ' ' + now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
-                    //alert('Datetime:' + now);
-                    //var BeSignedData = getData(SessionId, Account, now1, Symbol)
-                    //var BeSignedData = getData(Account, now1, Symbol)
-                    //var Plaintexthid = document.getElementById("Plaintext")
-                    //alert('簽章本文:' + BeSignedData);
-                    //BeSignedData = fetchAscii(BeSignedData)
-                    //Plaintexthid.value = BeSignedData
-                    //alert('簽章本文:' + BeSignedData);
-                    //var Datatbx = document.getElementById("Datatbx")
-                    //Datatbx.value = BeSignedData
-                    //簽章
-                    var retSignPKCS7 = myobj.SignPKCS7(Plaintext);
-                    //alert('簽章結果:' + retSignPKCS7);
-                    if (retSignPKCS7 == 0) {
-                        //將簽章值Show在SignDatatbx
-                        //var SignDatatbx = document.getElementById("SignDatatbx")
-                        //var SignDatahid = document.getElementById("SignData")
-                        //SignDatatbx.value = myobj.GetPKCS7Data();
-                        var Result = myobj.GetPKCS7Data();
-                        //alert(myobj.GetPKCS7Data());
-                        return Result;
-                        //alert('簽章值:' + SignDatahid.value);
-                        //var SignData = myobj.GetPKCS7Data();
+                    //alert('nowAccount:' + nowAccount);
+                    if (nowAccount == Account) {
+                        //組簽章本文(Session id+員工編號+現在時間)
+                        //var Symbol = "|"
+                        //var SessionId = document.getElementById("SessionIdhid").value
+                        //alert('SessionId:' + SessionId);
+                        //var now = new Date();
+                        //組時間yyyy/MM/dd hh:mm:ss
+                        //var now1 = now.getFullYear() + '/' + (now.getMonth() + 1) + '/' + now.getDate() + ' ' + now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
+                        //alert('Datetime:' + now);
+                        //var BeSignedData = getData(SessionId, Account, now1, Symbol)
+                        //var BeSignedData = getData(Account, now1, Symbol)
+                        //var Plaintexthid = document.getElementById("Plaintext")
+                        //alert('簽章本文:' + BeSignedData);
+                        //BeSignedData = fetchAscii(BeSignedData)
+                        //Plaintexthid.value = BeSignedData
+                        //alert('簽章本文:' + BeSignedData);
+                        //var Datatbx = document.getElementById("Datatbx")
+                        //Datatbx.value = BeSignedData
+                        //簽章
+                        var retSignPKCS7 = myobj.SignPKCS7(Plaintext);
+                        //alert('簽章結果:' + retSignPKCS7);
+                        if (retSignPKCS7 == 0) {
+                            //將簽章值Show在SignDatatbx
+                            //var SignDatatbx = document.getElementById("SignDatatbx")
+                            //var SignDatahid = document.getElementById("SignData")
+                            //SignDatatbx.value = myobj.GetPKCS7Data();
+                            var Result = myobj.GetPKCS7Data();
+                            //alert(myobj.GetPKCS7Data());
+                            return Result;
+                            //alert('簽章值:' + SignDatahid.value);
+                            //var SignData = myobj.GetPKCS7Data();
+                        }
+                        else {
+                            alert('簽章失敗,Return Code:' + retSignPKCS7 + 'ErrMsg:' + myobj.GetErrorMsg() + 'Funcation:SignPKCS7');
+                            location.reload();
+                        }
                     }
                     else {
-                        alert('簽章失敗,Return Code:' + retSignPKCS7 + 'ErrMsg:' + myobj.GetErrorMsg() + 'Funcation:SignPKCS7');
+                        alert('憑證CN與登入帳號不符' + 'Funcation:SignPKCS7');
                         location.reload();
                     }
                 }

@@ -33,7 +33,7 @@ namespace EPS.Models
         [Column(TypeName = "char")]
         public string ShiftID { get; set; }
         [Required]
-        [StringLength(100)]
+        [StringLength(500)]
         [Display(Name = "檢核結果")]
         public string CheckResult { get; set; }
         [Required]
