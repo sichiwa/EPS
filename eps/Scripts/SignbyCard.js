@@ -39,7 +39,8 @@ function SignData(Plaintext,nowAccount) {
                     //切割CN
                     var CNarr = TmpCN.split("-");
                     //抓員工編號
-                    var Account = CNarr[2]
+                    var Account = CNarr[2].toLowerCase();
+                    nowAccount = nowAccount.toLowerCase();
                     //alert('Account:'+ Account);
                     //alert('nowAccount:' + nowAccount);
                     if (nowAccount == Account) {

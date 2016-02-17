@@ -154,6 +154,51 @@ namespace EPS.Controllers
             }
         }
 
+        public ActionResult Logout()
+        {
+            //初始化系統參數
+            Configer.Init();
+
+            SYSTEMLOG SL = new SYSTEMLOG();
+            SL.UId = Session["UserID"].ToString();
+            SL.Controller = "Account";
+            SL.Action = "Logout";
+            SL.TotalCount = 1;
+            SL.StartDateTime = DateTime.Now;
+
+            string MailServer = Configer.MailServer;
+            int MailServerPort = Configer.MailServerPort;
+            string MailSender = Configer.MailSender;
+            List<string> MailReceiver = Configer.MailReceiver;
+
+            try
+            {
+                SL.EndDateTime = DateTime.Now;
+                SL.SuccessCount = 1;
+                SL.FailCount = 0;
+                SL.Result = true;
+                SL.Msg = "登出作業成功，UId:[" + Session["UserID"].ToString() + "]";
+                SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+                Session.Clear();
+             
+                return RedirectToAction("Login", "Account");
+            }
+            catch (Exception ex)
+            {
+                SL.EndDateTime = DateTime.Now;
+                SL.TotalCount = 1;
+                SL.SuccessCount = 0;
+                SL.FailCount = 1;
+                SL.Result = false;
+                SL.Msg = "登出作業失敗，" + "錯誤訊息[" + ex.ToString() + "]";
+                SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+
+                return RedirectToAction("Login", "Account");
+            }
+
+            
+        }
+
         public ActionResult Home()
         {
             int UserRole = Convert.ToInt32(Session["UserRole"].ToString());
