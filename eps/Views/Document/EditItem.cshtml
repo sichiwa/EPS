@@ -11,9 +11,10 @@
     
     <div class="form-horizontal">
         <h4>編輯檢核項目</h4>
+              @Html.HiddenFor(model => model.CheckTitle)
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.SN)
+        @Html.HiddenFor(model => model.ListID)
 
         @*<div class="form-group">
             @Html.LabelFor(model => model.CheckTitle, htmlAttributes: new { @class = "control-label col-md-2" })

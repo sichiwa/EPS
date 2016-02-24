@@ -14,6 +14,7 @@ using EPS.ViewModels.PROCESS;
 
 namespace EPS.Controllers
 {
+    [CheckSessionFilterAttribute]
     public class ReviewController : Controller
     {
         EPSContext context = new EPSContext();
@@ -183,7 +184,7 @@ namespace EPS.Controllers
                 SL.SuccessCount = 0;
                 SL.FailCount = 0;
                 SL.Result = false;
-                SL.Msg = "取得[" + CheckDate + "]覆核資料作業成功，" + "錯誤訊息[" + ex.ToString() + "]";
+                SL.Msg = "取得[" + CheckDate + "]覆核資料作業失敗，" + "錯誤訊息[" + ex.ToString() + "]";
                 SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
 
                 return null;

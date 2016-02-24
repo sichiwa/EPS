@@ -12,6 +12,7 @@ using System.Data.Entity;
 
 namespace EPS.Controllers
 {
+    [CheckSessionFilterAttribute]
     public class DocumentController : Controller
     {
         EPSContext context = new EPSContext();
@@ -430,7 +431,7 @@ namespace EPS.Controllers
             }
         }
 
-        public ActionResult EditItem(int SN)
+        public ActionResult EditItem(int ListID)
         {
             //初始化系統參數
             Configer.Init();
@@ -450,9 +451,11 @@ namespace EPS.Controllers
 
             try
             {
-                CHECKLIST CL = context.CHECKLISTS.Find(SN);
+                CHECKLIST CL = context.CHECKLISTS.Find(ListID);
                 CHECKTITLE CT = context.CHECKTITLES.Find(CL.CheckID);
                 vCHECKLIST_Manage VCTM = new vCHECKLIST_Manage();
+
+                VCTM.CheckTitle = CT.Title;
                 VCTM.CheckID = CL.CheckID;
                 VCTM.ListName = CL.ListName;
                 VCTM.Definition = CL.Definition;
@@ -500,7 +503,7 @@ namespace EPS.Controllers
                 SL.SuccessCount = 1;
                 SL.FailCount = 0;
                 SL.Result = true;
-                SL.Msg = "取得檢核項目資料作業成功，SN:[" + SN.ToString() + "]"; 
+                SL.Msg = "取得檢核項目資料作業成功，ListID:[" + ListID.ToString() + "]"; 
                 SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
 
                 return View(VCTM);
@@ -516,6 +519,84 @@ namespace EPS.Controllers
                 SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
 
                 return RedirectToAction("ListItem", "Document");
+            }
+        }
+
+        [HttpPost]
+        public ActionResult EditItem(vCHECKLIST_Manage VCLM)
+        {
+            //初始化系統參數
+            Configer.Init();
+
+            //Log記錄用
+            SYSTEMLOG SL = new SYSTEMLOG();
+            SL.UId = Session["UserID"].ToString();
+            SL.Controller = "Document";
+            SL.Action = "EditItem";
+            SL.StartDateTime = DateTime.Now;
+
+            string MailServer = Configer.MailServer;
+            int MailServerPort = Configer.MailServerPort;
+            string MailSender = Configer.MailSender;
+            List<string> MailReceiver = Configer.MailReceiver;
+
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    CHECKLIST nowCL = context.CHECKLISTS.Find(VCLM.ListID);
+                    //nowCL.ListID = CL.ListID;
+                    nowCL.CheckID = VCLM.CheckID;
+                    nowCL.ListName = VCLM.ListName;
+                    nowCL.Definition = VCLM.Definition;
+                    nowCL.StartTime = VCLM.StartTime;
+                    nowCL.EndTime = VCLM.EndTime;
+                    nowCL.ShiftID = VCLM.ShiftID;
+                    nowCL.ClassID = VCLM.ClassID;
+                    nowCL.CheckType = VCLM.CheckType;
+                    nowCL.AlwaysShow = VCLM.AlwaysShow;
+                    nowCL.ChargerID = VCLM.ChargerID;
+                    nowCL.ShowOrder = VCLM.ShowOrder;
+                    nowCL.UpadteAccount= Session["UserID"].ToString().Trim(); ;
+                    nowCL.UpdateTime = DateTime.Now;
+
+                    context.Entry(nowCL).State = EntityState.Modified;
+                    context.SaveChanges();
+
+                    SL.EndDateTime = DateTime.Now;
+                    SL.TotalCount = 1;
+                    SL.SuccessCount = 1;
+                    SL.FailCount = 0;
+                    SL.Result = true;
+                    SL.Msg = "編輯檢核項目作業成功，ListID:[" + VCLM.ListID + "]";
+                    SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+
+                    //string Title = context.CHECKTITLES.Find(VCLM.CheckID).Title;
+
+                    return RedirectToAction("ListItem", "Document",new { CheckID = VCLM.CheckID, Title = VCLM.CheckTitle });
+
+                }
+                else
+                {
+                    TempData["EditMsg"] = "<script>alert('編輯失敗');</script>";
+
+                    return RedirectToAction("EditItem", "Document", new { ListID = VCLM.ListID });
+                }
+            }
+            catch (Exception ex)
+            {
+
+                SL.EndDateTime = DateTime.Now;
+                SL.TotalCount = 1;
+                SL.SuccessCount = 0;
+                SL.FailCount = 1;
+                SL.Result = false;
+                SL.Msg = "編輯檢核項目作業失敗，" + "錯誤訊息[" + ex.ToString() + "]";
+                SF.log2DB(SL, MailServer, MailServerPort, MailSender, MailReceiver);
+
+                TempData["EditMsg"] = "<script>alert('發生異常');</script>";
+
+                return RedirectToAction("EditItem", "Document", new { ListID = VCLM.ListID });
             }
         }
 

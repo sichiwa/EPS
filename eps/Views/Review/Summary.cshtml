@@ -238,31 +238,34 @@
                                 //軟體憑證簽章
                             }
 
-                            //alert("TmpArr:" + TmpArr);
-                            //alert("CheckSN:" + CheckSN);
-                            //alert("CheckID:" + CheckID);
-                            //alert("CheckDate:" + CheckDate);
-                            //alert("Shift:" + ShiftID);
-                            //alert("UseHwSign:" + UseHwSign);
-                            //alert("BeSignedData:" + BeSignedData);
-                            //alert("SignedData:" + SignedData);
+                            if (SignedData != "fail") {
+                                //alert("TmpArr:" + TmpArr);
+                                //alert("CheckSN:" + CheckSN);
+                                //alert("CheckID:" + CheckID);
+                                //alert("CheckDate:" + CheckDate);
+                                //alert("Shift:" + ShiftID);
+                                //alert("UseHwSign:" + UseHwSign);
+                                //alert("BeSignedData:" + BeSignedData);
+                                //alert("SignedData:" + SignedData);
 
-                            $.ajax({
-                                url: "@Url.Content("~/Review/Confirm")",
-                                type: "POST",
-                                contextType: "text/html; charset=utf-8",
-                                data: {
-                                    CheckSNs: CheckSNs,
-                                    CheckDates: CheckDates,
-                                    SignedData: SignedData
-                                },
-                                success: function (data) {
-                                    alert(data);
-                                },
-                                error: function (data) {
-                                    alert(data);
-                                }
-                            });
+                                $.ajax({
+                                    url: "@Url.Content("~/Review/Confirm")",
+                                    type: "POST",
+                                    contextType: "text/html; charset=utf-8",
+                                    data: {
+                                        CheckSNs: CheckSNs,
+                                        CheckDates: CheckDates,
+                                        SignedData: SignedData
+                                    },
+                                    success: function (data) {
+                                        alert(data);
+                                    },
+                                    error: function (data) {
+                                        alert(data);
+                                    }
+                                });
+                            }
+                            else { }
                         }
                         else {
                             alert("您尚有項目未檢核完成!!");

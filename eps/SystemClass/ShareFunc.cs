@@ -541,7 +541,7 @@ namespace EPS.SystemClass
                                     HtmlBody += "</table>";
                                     MailBody = MT.Body.Replace("#UserName", UserName)
                                                       .Replace("#Body", HtmlBody)
-                                                      .Replace("#Link", "<a>機房表單系統連結</a>");
+                                                      .Replace("#Link", "<a href='"+Configer.SystemURL +"'>機房表單系統連結</a>");
 
                                     char[] s = { ',' };
                                     List<string> Receivers = StringProcessor.SplitString2Array(UserEmail, s);
@@ -724,7 +724,7 @@ namespace EPS.SystemClass
                                         HtmlBody += "</table>";
                                         MailBody = MT.Body.Replace("#UserName", UserName)
                                                     .Replace("#Body", HtmlBody)
-                                                    .Replace("#Link", "<a>機房表單系統連結</a>");
+                                                    .Replace("#Link", "<a href='" + Configer.SystemURL + "'>機房表單系統連結</a>");
 
                                         char[] s = { ',' };
                                         List<string> Receivers = StringProcessor.SplitString2Array(UserEmail, s);

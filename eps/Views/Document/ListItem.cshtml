@@ -107,8 +107,8 @@
             @Html.DisplayFor(modelItem => item.UpdateTime)
         </td>
         <td>
-            @Html.ActionLink("編輯", "EditItem", new { SN=item.ListID }) |
-            @Html.ActionLink("刪除", "Delete", new { id=item.ListID })
+            @Html.ActionLink("編輯", "EditItem", new { ListID = item.ListID }) |
+            @Html.ActionLink("刪除", "Delete", new { ListID = item.ListID })
         </td>
     </tr>
 }

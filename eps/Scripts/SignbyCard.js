@@ -7,15 +7,18 @@ if (typeof myobj == "undefined") {
 //憑證登入前端處理
 function SignData(Plaintext,nowAccount) {
     //alert('c');
+    var Result = "fail";
     //連接讀卡機
     var retSetTokenType = myobj.SetTokenType(2);
     if (retSetTokenType != "0") {
         alert('連結卡片失敗,Return Code:' + retSetTokenType + 'ErrMsg:' + myobj.GetErrorMsg());
-        location.reload();
+        // location.reload();
+        return Result;
     }
     else {
         //登入卡片
         //alert('元件OK');
+    
         var retGetCardStatus = myobj.GetCardStatus();
 
         if (retGetCardStatus == 0) {
@@ -43,6 +46,7 @@ function SignData(Plaintext,nowAccount) {
                     nowAccount = nowAccount.toLowerCase();
                     //alert('Account:'+ Account);
                     //alert('nowAccount:' + nowAccount);
+                
                     if (nowAccount == Account) {
                         //組簽章本文(Session id+員工編號+現在時間)
                         //var Symbol = "|"
@@ -77,27 +81,31 @@ function SignData(Plaintext,nowAccount) {
                         }
                         else {
                             alert('簽章失敗,Return Code:' + retSignPKCS7 + 'ErrMsg:' + myobj.GetErrorMsg() + 'Funcation:SignPKCS7');
-                            location.reload();
+                            //location.reload();
+                            return Result;
                         }
                     }
                     else {
                         alert('憑證CN與登入帳號不符' + 'Funcation:SignPKCS7');
-                        location.reload();
+                        //location.reload();
+                        return Result;
                     }
                 }
                 else {
                     alert('讀取憑證失敗,Return Code:' + cert + 'ErrMsg:' + myobj.GetErrorMsg() + 'Funcation:SelectCert');
-                    location.reload();
+                    //location.reload();
                 }
             }
             else {
                 alert('卡片登入失敗,Return Code:' + retLogin + 'ErrMsg:' + myobj.GetErrorMsg() + 'Funcation:Login');
-                location.reload();
+                //location.reload();
+                return Result;
             }
         }
         else {
             alert('取得卡片狀態失敗,Return Code:' + retGetCardStatus + 'ErrMsg:' + myobj.GetErrorMsg() + 'Funcation:SetTokenType');
-            location.reload();
+            //location.reload();
+            return Result;
         }
     }
 }

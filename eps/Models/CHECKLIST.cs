@@ -15,6 +15,7 @@ namespace EPS.Models
         [Display(Name = "檢核項目ID")]
         public int ListID { get; set; }
         //[ForeignKey("CheckID")]
+
         [Required]
         [Display(Name = "機房檢核文件ID")]
         public int CheckID { get; set; }

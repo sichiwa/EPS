@@ -13,6 +13,7 @@ using System.Globalization;
 
 namespace EPS.Controllers
 {
+    [CheckSessionFilterAttribute]
     public class ProcessController : Controller
     {
         EPSContext context = new EPSContext();

@@ -12,6 +12,7 @@ namespace EPS.SystemClass
         private string _Version;
         private int _Schedule;
         private string _LDAPName;
+        private string _SystemURL;
         private string _VAVerifyURL;
         private int _NumofgridviewPage_perrows;
         private int _SelectTopN;
@@ -147,6 +148,18 @@ namespace EPS.SystemClass
         {
             get { return _LDAPName; }
             set { _LDAPName = value; }
+        }
+
+        /// <summary>
+        /// 系統網址
+        /// </summary>
+        /// <value></value>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        public string SystemURL
+        {
+            get { return _SystemURL; }
+            set { _SystemURL = value; }
         }
 
         /// <summary>
@@ -365,7 +378,7 @@ namespace EPS.SystemClass
             set { _TextBody = value; }
         }
 
-        public void Init(string Version, int Schedule, int NumofgridviewPage_perrows, int SelectTopN, string C_DBConnstring,
+        public void Init(string Version, int Schedule, int NumofgridviewPage_perrows, int SelectTopN, string C_DBConnstring, string SystemURL,string VAVerifyURL,
         string SystemHashAlg, string SystemDateTimeFormat, string SplitSymbol, string SplitSymbol2, string SplitSymbol3,
         int PublicRoleID,
         string MailServer, int MailServerPort, string MailSender, List<string> MailReceiver, List<string> MailCC, bool MailUseSSL, bool MailBodyUseHTML, string MailPriority, int MailCodePage, string MailSubject, string MailBody,
@@ -379,6 +392,8 @@ namespace EPS.SystemClass
 
             this.NumofgridviewPage_perrows = NumofgridviewPage_perrows;
             this.SelectTopN = Convert.ToInt16(SelectTopN);
+            this.VAVerifyURL = VAVerifyURL;
+            this.SystemURL = SystemURL;
 
             this.C_DBConnstring = SecurityProcessor.TurnBase642String(C_DBConnstring);
             this.SystemHashAlg = SystemHashAlg;
@@ -416,6 +431,8 @@ namespace EPS.SystemClass
             this.LDAPName= WebConfigurationManager.AppSettings["LDAPName"];
             this.NumofgridviewPage_perrows = Convert.ToInt16(WebConfigurationManager.AppSettings["NumofgridviewPage_perrows"]);
             this.SelectTopN = Convert.ToInt16(WebConfigurationManager.AppSettings["SelectTopN"]);
+            this.VAVerifyURL = WebConfigurationManager.AppSettings["VAVerifyURL"];
+            this.SystemURL = WebConfigurationManager.AppSettings["SystemURL"];
 
             //this.C_DBConnstring = WebConfigurationManager.ConnectionStrings["C_DBConnstring"].ToString();//SecurityProcessor.TurnBase642String(WebConfigurationManager.ConnectionStrings["C_DBConnstring"].ToString());
             this.SystemHashAlg = WebConfigurationManager.AppSettings["SystemHashAlg"];
