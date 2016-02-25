@@ -73,7 +73,7 @@ function SignData(Plaintext,nowAccount) {
                             //var SignDatatbx = document.getElementById("SignDatatbx")
                             //var SignDatahid = document.getElementById("SignData")
                             //SignDatatbx.value = myobj.GetPKCS7Data();
-                            var Result = myobj.GetPKCS7Data();
+                            Result = myobj.GetPKCS7Data();
                             //alert(myobj.GetPKCS7Data());
                             return Result;
                             //alert('簽章值:' + SignDatahid.value);
@@ -94,6 +94,7 @@ function SignData(Plaintext,nowAccount) {
                 else {
                     alert('讀取憑證失敗,Return Code:' + cert + 'ErrMsg:' + myobj.GetErrorMsg() + 'Funcation:SelectCert');
                     //location.reload();
+                    return Result;
                 }
             }
             else {
