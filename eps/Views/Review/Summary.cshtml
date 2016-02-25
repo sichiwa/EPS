@@ -158,7 +158,7 @@
 
             $(function () {
                 $(".rp1").rowspan1();
-                
+
                 $(".ListName").each(function () {
                     var a = $(this).text().trim();
                     //alert(a);
@@ -169,7 +169,7 @@
 
                 });
 
-         
+
                // alert(a);
 
                 $(".rp1").click(function () {
@@ -259,13 +259,16 @@
                                     },
                                     success: function (data) {
                                         alert(data);
+                                        window.location.href = "@Url.Content("~/Review/index")";
                                     },
                                     error: function (data) {
                                         alert(data);
                                     }
                                 });
                             }
-                            else { }
+                            else {
+                                alert("簽章失敗!!");
+                            }
                         }
                         else {
                             alert("您尚有項目未檢核完成!!");
@@ -300,6 +303,7 @@
                                 },
                                 success: function (data) {
                                     alert(data);
+                                    window.location.href = "@Url.Content("~/Review/index")";
                                 },
                                 error: function (data) {
                                     alert(data);
@@ -310,7 +314,6 @@
                             alert("請輸入駁回理由");
                         }
                     }
-
                 });
 
                 $(".Signrbtn").change(function () {
