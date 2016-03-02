@@ -411,6 +411,7 @@ namespace EPS.Controllers
                                 ListName = cl.ListName,
                                 CheckType = cl.CheckType,
                                 Shift = cl.ShiftID,
+                                Charger=cl.ChargerID,
                                 StartTime = cl.StartTime,
                                 EndTime = cl.EndTime,
                                 CheckResult = y.CheckResult,
@@ -422,6 +423,23 @@ namespace EPS.Controllers
                     //根據班別挑出檢核項目
                     var Shifts = new string[] { "00", Shift };
                     query = query.Where(b => Shifts.Contains(b.Shift));
+
+                    //取得特定角色下的使用者清單
+                    int RId = Convert.ToInt32(Session["UserRole"].ToString());
+
+                    //只有OPManager角色需要處理
+                    if (RId==3)
+                    {
+                        //依據負責人挑出檢核項目
+                        var Users = context.EPSUSERS.Where(b => b.RId == RId).Select(b => b.UId).ToList();
+                        SF.logandshowInfo("Users:" + Users.ToString(), log_Info);
+                        int C= query.Where(b => Users.Contains(b.Charger)).Count();
+                        SF.logandshowInfo("C:" + C.ToString(), log_Info);
+                        if (C>0)
+                        {
+                            query = query.Where(b => Users.Contains(b.Charger));
+                        }
+                    }
 
                     vCP.vCHECKDETAILs = query.OrderBy(b => b.StartTime).ToList();
                     SL.EndDateTime = DateTime.Now;

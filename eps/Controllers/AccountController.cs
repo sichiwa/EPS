@@ -110,7 +110,7 @@ namespace EPS.Controllers
                         Session["UserRole"] = UserRole;
 
                         //主管導向覆核頁面
-                        if (UserRole > 2)
+                        if (UserRole > 3)
                         {
                             return RedirectToAction("Index", "Review");
                         }

@@ -15,6 +15,8 @@ namespace EPS.ViewModels.PROCESS
 
         //[Display(Name = "機房檢核主題名稱")]
         //public string Title { get; set; }
+        [Display(Name = "負責人")]
+        public string Charger { get; set; }
 
         [Display(Name = "檢核開始時間")]
         public string StartTime { get; set; }
