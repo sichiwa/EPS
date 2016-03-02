@@ -104,9 +104,9 @@
             <label class="radio-inline">
                 <input type="radio" id="HwSignrbtn" checked class="Signrbtn" />卡片簽章
             </label>
-            <label class="radio-inline">
+            @*<label class="radio-inline">
                 <input type="radio" id="SwSignrbtn" class="Signrbtn" />軟體簽章
-            </label>
+            </label>*@
         </div>
         <br />
         <div class="row form-inline" id="Pwddiv">
@@ -176,7 +176,7 @@
                     var CheckSN = $(this).text().trim();
                     var CheckDate = CheckSN.substring(0, 8);
                     //alert("CheckSN:" + CheckSN);
-                    window.open("/Review/Detail?CheckSN=" + CheckSN + "&CheckDate=" + CheckDate, "明細");
+                    window.open("/EPS/Review/Detail?CheckSN=" + CheckSN + "&CheckDate=" + CheckDate, "明細");
                 });
 
                 //確認檢核完畢
