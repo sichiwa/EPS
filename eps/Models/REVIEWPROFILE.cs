@@ -21,8 +21,9 @@ namespace EPS.Models
         [Display(Name = "日常檢核覆核狀態")]
         public string CloseStauts { get; set; }
         [Required]
+        [StringLength(50)]
         [Display(Name = "下一位覆核角色ID")]
-        public int NextReview { get; set; }
+        public string NextReviews { get; set; }
         [Required]
         [StringLength(3)]
         [Display(Name = "使用的郵件範本ID")]

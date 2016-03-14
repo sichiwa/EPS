@@ -211,17 +211,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201509240549142_abc.cs" />
-    <Compile Include="Migrations\201509240549142_abc.Designer.cs">
-      <DependentUpon>201509240549142_abc.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509290525464_20150929-addtable.cs" />
-    <Compile Include="Migrations\201509290525464_20150929-addtable.Designer.cs">
-      <DependentUpon>201509290525464_20150929-addtable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509290604283_20150929-1-addtable.cs" />
-    <Compile Include="Migrations\201509290604283_20150929-1-addtable.Designer.cs">
-      <DependentUpon>201509290604283_20150929-1-addtable.cs</DependentUpon>
+    <Compile Include="Migrations\201603070752551_AlterCol-REVIEWPROFILE.cs" />
+    <Compile Include="Migrations\201603070752551_AlterCol-REVIEWPROFILE.Designer.cs">
+      <DependentUpon>201603070752551_AlterCol-REVIEWPROFILE.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -443,14 +435,8 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201509240549142_abc.resx">
-      <DependentUpon>201509240549142_abc.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509290525464_20150929-addtable.resx">
-      <DependentUpon>201509290525464_20150929-addtable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509290604283_20150929-1-addtable.resx">
-      <DependentUpon>201509290604283_20150929-1-addtable.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201603070752551_AlterCol-REVIEWPROFILE.resx">
+      <DependentUpon>201603070752551_AlterCol-REVIEWPROFILE.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

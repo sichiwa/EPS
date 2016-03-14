@@ -20,6 +20,7 @@ namespace EPS.Models
         public string CloseStauts { get; set; }
         [Required]
         [Display(Name = "下一位覆核角色ID")]
+        [StringLength(50)]
         public string NextReviews { get; set; }
         [Required]
         [StringLength(3)]

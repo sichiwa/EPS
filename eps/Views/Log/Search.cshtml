@@ -17,22 +17,22 @@
         {
             <div class="row form-group">
                 @Html.Label("執行人", new { Class = "col-md-1 control-label" })
-                @Html.DropDownListFor(m => m.nowUser, (SelectList)Model.UserList, new { Class = "form-control", id = "UserList" })
+                @Html.DropDownListFor(m => m.qSL.nowUser, (SelectList)Model.UserList,"全部", new { Class = "form-control", id = "UserList" })
             </div>
             <div class="row form-group">
                 @Html.Label("開始時間", new { Class = "col-md-1 control-label" })
-                @Html.TextBox("STime", "", new { Class = "form-control date-picker" })
+                @Html.TextBoxFor(m=>m.qSL.STime, new { Class = "form-control date-picker" })
             </div>
             <div class="row form-group">
                 @Html.Label("結束時間", new { Class = "col-md-1 control-label" })
-                @Html.TextBox("ETime", "", new { Class = "form-control date-picker" })
+                @Html.TextBoxFor(m=>m.qSL.ETime, new { Class = "form-control date-picker" })
             </div>
             <div class="row form-group">
                 @Html.Label("執行結果", new { Class = "col-md-1 control-label" })
-                @Html.DropDownList("nowResult", (IEnumerable<SelectListItem>)Model.ResultList, new { Class = "form-control" })
+                @Html.DropDownListFor(m=>m.qSL.nowResult, (IEnumerable<SelectListItem>)Model.ResultList, new { Class = "form-control" })
             </div>
             <div class="row form-group">
-              @Html.HiddenFor(m=>m.PageIndex)
+              @Html.HiddenFor(m=>m.qSL.PageIndex)
                 <input type="submit" class="col-md-offset-1 col-md-12 btn btn-primary" id="submitbtn" value="查詢" />
             </div>
         }
@@ -129,13 +129,21 @@
         $(function () {
 
             $('.pagination>li>a[href]').each(function (i, item) {
-                var page = $(item).attr('href').replace('/Log/Search?Page=', '');
+                var page = $(item).attr('href').replace('/EPS/Log/Search?Page=', '');
                 $(item).attr('href', '#').click(function () { postPage(page); });
 
             });
 
-            $("#UserList").prepend("<option value='-1' selected='true'>全部</option>");
-            $("#UserList").val("-1");
+            function postPage(page) {
+                var targetFormId = '#queryform';
+                //alert(page);
+                $("#qSL_PageIndex").val(page);
+                //alert($("#qSL_PageIndex").val());
+
+                if ($(targetFormId).size() > 0) {
+                    $(targetFormId).submit();
+                }
+            };
 
             $("#serachdiv").hide();
             $("#needSearchcbx").change(function () {
@@ -175,17 +183,6 @@
                            $("#ETime").valid();
                        });
         });
-
-        function postPage(page) {
-            var targetFormId = '#queryform';
-            //alert(page);
-            if ($(targetFormId).size() > 0) {
-                $('<input>')
-                 .attr({ type: 'hidden', id: 'PageIndex', name: 'PageIndex', value: page })
-                 .appendTo($(targetFormId));
-                $(targetFormId).submit();
-            }
-        };
 
     </script>
 }

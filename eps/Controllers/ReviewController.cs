@@ -41,11 +41,12 @@ namespace EPS.Controllers
             string MailSender = Configer.MailSender;
             List<string> MailReceiver = Configer.MailReceiver;
 
-            int RoleID = Int32.Parse(Session["UserRole"].ToString());
+            //int RoleID = Int32.Parse(Session["UserRole"].ToString());
+            string RoleID = Session["UserRole"].ToString();
 
             try
             {
-                var query = from rp in context.REVIEWPROFILES.Where(b => b.NextReview == RoleID)
+                var query = from rp in context.REVIEWPROFILES.Where(b => b.NextReviews == RoleID)
                             join cp in context.CHECKPROCESSES.Where(b => b.CloseStutus != "檢查中")
                                                              .Where(b=>b.CloseStutus != "早班檢核完畢")
                             on rp.CloseStauts equals cp.CloseStutus
@@ -269,6 +270,8 @@ namespace EPS.Controllers
             SL.Action = "Confirm";
             SL.StartDateTime = DateTime.Now;
 
+            string UId = Session["UserID"].ToString();
+
             string MailServer = Configer.MailServer;
             int MailServerPort = Configer.MailServerPort;
             string MailSender = Configer.MailSender;
@@ -290,8 +293,8 @@ namespace EPS.Controllers
                     if (CP != null)
                     {
                         //update CHECKPROCESSES
-                        EPSUSER U = context.EPSUSERS.Find(Session["UserID"].ToString().Trim());
-                        int Role = int.Parse(Session["UserRole"].ToString());
+                        EPSUSER U = context.EPSUSERS.Find(UId);
+                        int Role = U.RId;// int.Parse(UId);
 
                         switch (Role)
                         {
@@ -318,7 +321,7 @@ namespace EPS.Controllers
                                 break;
                         }
 
-                        CP.UpadteAccount = Session["UserID"].ToString().Trim();
+                        CP.UpadteAccount = UId;
                         CP.UpdateTime = DateTime.Now;
                         context.Entry(CP).State = EntityState.Modified;
                         context.SaveChanges();
@@ -348,9 +351,17 @@ namespace EPS.Controllers
 
                 if (ReviewOK)
                 {
-                    //通知下一位負責人
-                    SF.emailNotify2ReviewbyDate(CloseStutus, Session["UserID"].ToString(),
-                                                CheckDates[0].ToString(), "覆核");
+                    //通知下一位負責人，已結案則通知機房領班、機房主管、系統部主管
+                    if (CloseStutus == "已結案")
+                    {
+                        SF.emailNotify2ClosebyDate(CloseStutus, UId, 
+                            CheckDates[0].ToString(), CloseStutus);
+                    }
+                    else
+                    {
+                        SF.emailNotify2ReviewbyDate(CloseStutus, UId,
+                                              CheckDates[0].ToString(), "覆核");
+                    }
                     SL.EndDateTime = DateTime.Now;
                     SL.TotalCount = TotalCount;
                     SL.SuccessCount = SuccessCount;

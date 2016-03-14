@@ -7,13 +7,13 @@ namespace EPS.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class _20150929addtable : IMigrationMetadata
+    public sealed partial class AlterColREVIEWPROFILE : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(_20150929addtable));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AlterColREVIEWPROFILE));
         
         string IMigrationMetadata.Id
         {
-            get { return "201509290525464_20150929-addtable"; }
+            get { return "201603070752551_AlterCol-REVIEWPROFILE"; }
         }
         
         string IMigrationMetadata.Source

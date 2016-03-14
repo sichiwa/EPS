@@ -21,13 +21,16 @@ namespace EPS.Controllers
         String log_Err = "Err";
 
         // GET: Log
-        public ActionResult Search(int page = 1)
+        public ActionResult Search(int page=1 )
         {
             int currentPage = page < 1 ? 1 : page;
             DateTime STime = Convert.ToDateTime(DateTime.Now.ToString("yyyy/MM/dd") + " 00:00:00");
             DateTime ETime = Convert.ToDateTime(DateTime.Now.ToString("yyyy/MM/dd") + " 23:59:00");
 
             vSystemLog vSL = getSystemLog("-1", STime, ETime, "-1", currentPage);
+            vSL.qSL = new QuerySystmeLog();
+            vSL.qSL.STime = DateTime.Now.AddMonths(-1);
+            vSL.qSL.ETime = DateTime.Now;
 
             if (vSL != null)
             {
@@ -41,13 +44,22 @@ namespace EPS.Controllers
         }
 
         [HttpPost]
-        public ActionResult Search(QuerySystmeLog qSL)
+        public ActionResult Search(vSystemLog _vSL)
         {
-            int currentPage = qSL.PageIndex < 1 ? 1 : qSL.PageIndex;
-            string nowUser = qSL.nowUser;
-            string nowResult = qSL.nowResult;
-            DateTime STime = qSL.STime;
-            DateTime ETime = qSL.ETime;
+            int currentPage = _vSL. qSL.PageIndex < 1 ? 1 : _vSL. qSL.PageIndex;
+            SF.logandshowInfo("currentPage" + currentPage.ToString(),log_Info);
+            string nowUser = _vSL. qSL.nowUser;
+            if ( string.IsNullOrEmpty(nowUser))
+            {
+                nowUser = "-1";
+            }
+            SF.logandshowInfo("nowUser" + nowUser, log_Info);
+            string nowResult = _vSL. qSL.nowResult;
+            SF.logandshowInfo("nowResult" + nowResult, log_Info);
+            DateTime STime = _vSL.qSL.STime;
+            SF.logandshowInfo("STime" + STime.ToString(), log_Info);
+            DateTime ETime = _vSL.qSL.ETime;
+            SF.logandshowInfo("ETime" + ETime.ToString(), log_Info);
             string TmpETime = ETime.ToString("yyyy/MM/dd") + " 23:59:59";
             ETime = Convert.ToDateTime(TmpETime);
 
@@ -120,23 +132,14 @@ namespace EPS.Controllers
                     vSL.nowUser = nowUser;
                     vSL.PageIndex = CurrentPage;
                     vSL.nowResult = nowResult;
-                    //List<SelectListItem> items = 
-                    //var emptyUser = new SelectListItem()
-                    //{
-                    //    Value = "-1",
-                    //    Text = "全部"
-                    //};
-
-                    //// Adds the empty item at the top of the list
-                    //items.Insert(0, emptyUser);
-
                     vSL.UserList = SF.getUserList(nowUser);
+                
+                    // Adds the empty item at the top of the list
                     List<SelectListItem> ResultListItmes = new List<SelectListItem>();
                     ResultListItmes.Add(new SelectListItem
                     {
                         Text = "全部",
-                        Value = "-1",
-                        Selected = true
+                        Value = "-1"
                     });
                     ResultListItmes.Add(new SelectListItem
                     {
